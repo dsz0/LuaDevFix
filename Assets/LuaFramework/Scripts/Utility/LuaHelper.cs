@@ -32,8 +32,8 @@ namespace LuaFramework {
         /// <summary>
         /// 资源管理器
         /// </summary>
-        public static ResourceManager GetResManager() {
-            return AppFacade.Instance.GetManager<ResourceManager>(ManagerName.Resource);
+        public static LuaResourceManager GetResManager() {
+            return AppFacade.Instance.GetManager<LuaResourceManager>(ManagerName.Resource);
         }
 
         /// <summary>

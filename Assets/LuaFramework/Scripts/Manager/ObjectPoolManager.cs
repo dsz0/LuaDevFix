@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿/**
+ * 这是一个半成品的对象管理池，还有很多可以优化和改进的地方。等需要的时候再完善。
+ * 创建标识：Lorry 2018/1/31
+ */
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
@@ -61,7 +65,7 @@ namespace LuaFramework {
             }
         }
 
-        ///-----------------------------------------------------------------------------------------------
+        ///下面是通用对象池-----------------------------------------------------------------------------------------------
 
         public ObjectPool<T> CreatePool<T>(UnityAction<T> actionOnGet, UnityAction<T> actionOnRelease) where T : class {
             var type = typeof(T);

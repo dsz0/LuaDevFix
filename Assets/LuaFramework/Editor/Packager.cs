@@ -62,6 +62,8 @@ public class Packager
     /// </summary>
     public static void BuildAssetResource(BuildTarget target)
     {
+        UnityEngine.Debug.LogError("Build Res Start>>>" + System.DateTime.Now.ToString());
+
         if (Directory.Exists(Util.DataPath))
         {//如果数据存放目录存在，先删除，主要考虑测试需要。
             Directory.Delete(Util.DataPath, true);
@@ -101,7 +103,8 @@ public class Packager
             Directory.Delete(streamDir, true);
         }
         AssetDatabase.Refresh();
-        UnityEngine.Debug.LogError("Build Res Finish!!");
+        
+        UnityEngine.Debug.LogError("Build Res Finish>>>" + System.DateTime.Now.ToString());
     }
     /// <summary>
     /// 将指定目录下所有对应扩展名的对象，打包到bundleName命名的AssetBundle包中。
@@ -216,7 +219,7 @@ public class Packager
     /// </summary>
     static void HandleCsvBundle()
     {
-        string content = File.ReadAllText(Application.dataPath + "/AssetBundleInfo.csv");
+        string content = File.ReadAllText(Application.dataPath + "\\" + AppConst.AppName + "\\" + "HotRes" + "/AssetBundleInfo.csv");
         string[] contents = content.Split(new string[] { "\r\n" }, System.StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < contents.Length; i++)
         {

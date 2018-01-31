@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 using System.Text;
+using LuaFramework;
 
 /// <summary>
 /// 后缀枚举
@@ -58,7 +59,7 @@ public class AddBuildMapUtil : EditorWindow
         {
             Clear();
 
-            string path = EditorUtility.OpenFilePanel("", Application.dataPath, "csv");
+            string path = EditorUtility.OpenFilePanel("", Application.dataPath + "\\" + AppConst.AppName + "\\" + "HotRes", "csv");
             string content = File.ReadAllText(path);
             string[] contents = content.Split(new string[] { "\r\n" }, System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -70,7 +71,7 @@ public class AddBuildMapUtil : EditorWindow
         }
         if (GUILayout.Button("保存"))
         {
-            string path = EditorUtility.SaveFilePanel("", Application.dataPath, "AssetBundleInfo", "csv");
+            string path = EditorUtility.SaveFilePanel("", Application.dataPath +"\\" + AppConst.AppName+"\\" + "HotRes", "AssetBundleInfo", "csv");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < count; i++)
             {

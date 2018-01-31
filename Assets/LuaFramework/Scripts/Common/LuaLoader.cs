@@ -8,12 +8,12 @@ namespace LuaFramework {
     /// 集成自LuaFileUtils，重写里面的ReadFile，
     /// </summary>
     public class LuaLoader : LuaFileUtils {
-        private ResourceManager m_resMgr;
+        private LuaResourceManager m_resMgr;
 
-        ResourceManager resMgr {
+        LuaResourceManager resMgr {
             get { 
                 if (m_resMgr == null)
-                    m_resMgr = AppFacade.Instance.GetManager<ResourceManager>(ManagerName.Resource);
+                    m_resMgr = AppFacade.Instance.GetManager<LuaResourceManager>(ManagerName.Resource);
                 return m_resMgr;
             }
         }

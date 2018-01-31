@@ -1,10 +1,10 @@
 ﻿/**
- * 文件名称：ResourceManager.cs
+ * 文件名称：LuaResourceManager.cs
  * 简    述：加载AssetBundle的相关操作。
  * 在pc平台上默认加载的是Assets\StreamingAssets里的东西，移动平台上则是Application.persistentDataPath。
  * 如果我们在pc平台上想样读取外部路径(使用www)，模拟热更新，可在Initialize修改：m_BaseDownloadingURL = "file:///" + Util.DataPath;
  * [用法]先通过Initialize方法加载总清单文件(GameManager中调用)，然后通过LoadPrefab方法来加载AB包，
- * 
+ * 不过因为这个名称可能和已有的名称重复，而外部又不全部是有命名空间的,所以暂时改为LuaResourceManager
  * 创建标识：Lorry 2018/1/27
  **/
 #if ASYNC_MODE
@@ -28,7 +28,7 @@ public class AssetBundleInfo {
 
 namespace LuaFramework {
 
-    public class ResourceManager : Manager {
+    public class LuaResourceManager : Manager {
         string m_BaseDownloadingURL = "";
         string[] m_AllManifest = null;
         AssetBundleManifest m_AssetBundleManifest = null;
@@ -258,7 +258,7 @@ using LuaInterface;
 using UObject = UnityEngine.Object;
 
 namespace LuaFramework {
-    public class ResourceManager : Manager {
+    public class LuaResourceManager : Manager {
         private string[] m_Variants = { };
         private AssetBundleManifest manifest;
         private AssetBundle shared, assetbundle;

@@ -75,7 +75,7 @@ public class SocketClient {
     void OnConnect(IAsyncResult asr) {
         outStream = client.GetStream();
         client.GetStream().BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(OnRead), null);
-        NetworkManager.AddEvent(Protocal.Connect, new ByteBuffer());
+        NetworkManager.AddEvent(LuaProtocal.Connect, new ByteBuffer());
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public class SocketClient {
     void OnDisconnected(DisType dis, string msg) {
         Close();   //关掉客户端链接
         int protocal = dis == DisType.Exception ?
-        Protocal.Exception : Protocal.Disconnect;
+        LuaProtocal.Exception : LuaProtocal.Disconnect;
 
         ByteBuffer buffer = new ByteBuffer();
         buffer.WriteShort((ushort)protocal);

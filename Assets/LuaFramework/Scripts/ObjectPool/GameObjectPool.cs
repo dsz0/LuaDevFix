@@ -15,7 +15,7 @@ namespace LuaFramework {
 
 	public class GameObjectPool {
         private int maxSize;
-		private int poolSize;
+		//private int poolSize;
 		private string poolName;
         private Transform poolRoot;
         private GameObject poolObjectPrefab;
@@ -23,7 +23,7 @@ namespace LuaFramework {
 
         public GameObjectPool(string poolName, GameObject poolObjectPrefab, int initCount, int maxSize, Transform pool) {
 			this.poolName = poolName;
-			this.poolSize = initCount;
+			//this.poolSize = initCount;
             this.maxSize = maxSize;
             this.poolRoot = pool;
             this.poolObjectPrefab = poolObjectPrefab;
@@ -51,8 +51,15 @@ namespace LuaFramework {
 			if(availableObjStack.Count > 0) {
 				go = availableObjStack.Pop();
 			} else {
-				Debug.LogWarning("No object available & cannot grow pool: " + poolName);
-			}
+                if(availableObjStack.Count >= maxSize)
+                {
+                    Debug.LogWarning("No object available & cannot grow pool: " + poolName);
+                }
+                else
+                {
+                    AddObjectToPool(NewObjectInstance());
+                }
+            }
             go.SetActive(true);
             return go;
 		} 

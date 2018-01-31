@@ -1,5 +1,5 @@
 ﻿/**
- * 文件名称：GameManager.cs
+ * 文件名称：HotFixManager.cs
  * 简    述：这里最重要的功能其实是解包，进行资源更新，然后在OnInitialize中执行.lua文件，当然因为函数中调用了LuaManager.InitStart()，所以在Main.lua中执行我们需要的逻辑也是可行的。
  * 如果更新界面也要热更得话。解包过程要分两次。第一次解包后执行lua逻辑，第二次解包后才更新（这时才能用进度条表现热更新进度）。
  * 为什么要解包两次呢？因为进度界面的lua代码需要依赖一些核心的lua文件，所以干脆先把lua文件全都解包。
@@ -18,7 +18,10 @@ using System.IO;
 
 namespace LuaFramework
 {
-    public class GameManager : Manager
+    /// <summary>
+    /// 解包，及下载管理，在这个类中进入游戏。
+    /// </summary>
+    public class HotFixManager : Manager
     {
         protected static bool initialize = false;
         bool hadExtractResource;
@@ -287,7 +290,7 @@ namespace LuaFramework
             {
                 LuaManager.Close();
             }
-            Debug.Log("~GameManager was destroyed");
+            Debug.Log("~HotFixManager was destroyed");
         }
     }
 }
