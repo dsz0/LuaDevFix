@@ -155,8 +155,11 @@ public static class CustomSettings
         //for LuaFramework
         _GT(typeof(RectTransform)),
         _GT(typeof(Text)),
-
+        _GT(typeof(UIPanel)),
+        _GT(typeof(UILabel)),
+        _GT(typeof(UIGrid)),
         _GT(typeof(Util)),
+        _GT(typeof(WrapGrid)),
         _GT(typeof(AppConst)),
         _GT(typeof(LuaHelper)),
         _GT(typeof(ByteBuffer)),

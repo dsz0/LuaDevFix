@@ -1,0 +1,4 @@
+prompt_asset.unity3d,*.png,Assets/LuaFramework/Examples/Textures/Prompt
+shared_asset.unity3d,*.png,Assets/LuaFramework/Examples/Textures/Shared
+message.unity3d,*.prefab,Assets/LuaFramework/Examples/Builds/Message
+prompt.unity3d,*.prefab,Assets/LuaFramework/Examples/Builds/Prompt
