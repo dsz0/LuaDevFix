@@ -1,12 +1,12 @@
 local transform;
 local gameObject;
 
-PromptPanel = {};
-local this = PromptPanel;
+ActivityDailyPanel = {};
+local this = ActivityDailyPanel;
 
 --启动事件--
-function PromptPanel.Awake(obj)
-	logWarn("PromptPanel.Awake");
+function ActivityDailyPanel.Awake(obj)
+	logWarn("ActivityDailyPanel.Awake");
 	gameObject = obj;
 	transform = obj.transform;
 
@@ -14,13 +14,13 @@ function PromptPanel.Awake(obj)
 	logWarn("Awake lua--->>"..gameObject.name);
 end
 
---初始化面板--
-function PromptPanel.InitPanel()
+--初始化面板成员--
+function ActivityDailyPanel.InitPanel()
 	this.btnOpen = transform:Find("Open").gameObject;
 	this.gridParent = transform:Find('ScrollView/Grid');
 end
 
---单击事件--
-function PromptPanel.OnDestroy()
+--销毁调用函数--
+function ActivityDailyPanel.OnDestroy()
 	logWarn("OnDestroy---->>>");
 end

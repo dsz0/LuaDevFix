@@ -33,7 +33,7 @@ function PromptCtrl.OnCreate(obj)
 
 	panel = transform:GetComponent('UIPanel');
 	prompt = transform:GetComponent('LuaBehaviour');
-	logWarn("Start lua--->>"..gameObject.name);
+	logWarn("Start lua ProptCtrl.OnCreate--->>"..gameObject.name);
 
 	prompt:AddClick(PromptPanel.btnOpen, this.OnClick);
 	resMgr:LoadPrefab('prompt', { 'PromptItem' }, this.InitPanel);
@@ -41,7 +41,7 @@ end
 
 --初始化面板--
 function PromptCtrl.InitPanel(objs)
-	local count = 100; 
+	local count = 100;
 	local parent = PromptPanel.gridParent;
 	for i = 1, count do
 		local go = newObject(objs[0]);

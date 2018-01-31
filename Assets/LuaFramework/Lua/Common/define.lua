@@ -1,11 +1,15 @@
 
 CtrlNames = {
+	ActivityDaily = "ActivityDailyCtrl",
+	Tips = "TipsCtrl",
 	Prompt = "PromptCtrl",
 	Message = "MessageCtrl"
 }
 
 PanelNames = {
-	"PromptPanel",	
+	"ActivityDailyPanel",
+	"TipsPanel",
+	"PromptPanel",
 	"MessagePanel",
 }
 
