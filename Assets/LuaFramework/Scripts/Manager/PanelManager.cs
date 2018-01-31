@@ -1,16 +1,27 @@
+/**
+ * 文件名称：PanelManager.cs
+ * 简    述：主要是为了让lua中能方便的生成UIPanel面板。
+ * 使用方法：在框架中基本上不需要对其进行调用。主要是在lua的XXXCtrl.Awake()中调用panelMgr:CreatePanel
+ * 创建标识：Lorry 2018/1/26
+ **/
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using LuaInterface;
 
-namespace LuaFramework {
-    public class PanelManager : Manager {
+namespace LuaFramework
+{
+    public class PanelManager : Manager
+    {
         private Transform parent;
 
-        Transform Parent {
-            get {
-                if (parent == null) {
+        Transform Parent
+        {
+            get
+            {
+                if (parent == null)
+                {
                     GameObject go = GameObject.FindWithTag("GuiCamera");
                     if (go != null) parent = go.transform;
                 }
@@ -22,13 +33,15 @@ namespace LuaFramework {
         /// 创建面板，请求资源管理器
         /// </summary>
         /// <param name="type"></param>
-        public void CreatePanel(string name, LuaFunction func = null) {
+        public void CreatePanel(string name, LuaFunction func = null)
+        {
             string assetName = name + "Panel";
             string abName = name.ToLower() + AppConst.ExtName;
             if (Parent.FindChild(name) != null) return;
 
 #if ASYNC_MODE
-            ResManager.LoadPrefab(abName, assetName, delegate(UnityEngine.Object[] objs) {
+            ResManager.LoadPrefab(abName, assetName, delegate (UnityEngine.Object[] objs)
+            {
                 if (objs.Length == 0) return;
                 GameObject prefab = objs[0] as GameObject;
                 if (prefab == null) return;
@@ -65,9 +78,10 @@ namespace LuaFramework {
         /// 关闭面板
         /// </summary>
         /// <param name="name"></param>
-        public void ClosePanel(string name) {
+        public void ClosePanel(string name)
+        {
             var panelName = name + "Panel";
-            var panelObj = Parent.FindChild(panelName);
+            Transform panelObj = Parent.FindChild(panelName);
             if (panelObj == null) return;
             Destroy(panelObj.gameObject);
         }

@@ -32,11 +32,15 @@ namespace LuaFramework {
         public void AddClick(GameObject go, LuaFunction luafunc) {
             if (go == null || luafunc == null) return;
             buttons.Add(go.name, luafunc);
-            go.GetComponent<Button>().onClick.AddListener(
-                delegate() {
-                    luafunc.Call(go);
-                }
-            );
+            //go.GetComponent<Button>().onClick.AddListener(
+            //    delegate() {
+            //        luafunc.Call(go);
+            //    }
+            //);
+            UIEventListener.Get(go).onClick = delegate (GameObject o) {
+                luafunc.Call(go);
+            };
+
         }
 
         /// <summary>
@@ -47,9 +51,9 @@ namespace LuaFramework {
             if (go == null) return;
             LuaFunction luafunc = null;
             if (buttons.TryGetValue(go.name, out luafunc)) {
+                buttons.Remove(go.name);
                 luafunc.Dispose();
                 luafunc = null;
-                buttons.Remove(go.name);
             }
         }
 

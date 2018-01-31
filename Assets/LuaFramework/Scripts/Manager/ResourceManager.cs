@@ -1,4 +1,13 @@
-﻿#if ASYNC_MODE
+﻿/**
+ * 文件名称：ResourceManager.cs
+ * 简    述：加载AssetBundle的相关操作。
+ * 在pc平台上默认加载的是Assets\StreamingAssets里的东西，移动平台上则是Application.persistentDataPath。
+ * 如果我们在pc平台上想样读取外部路径(使用www)，模拟热更新，可在Initialize修改：m_BaseDownloadingURL = "file:///" + Util.DataPath;
+ * [用法]先通过Initialize方法加载总清单文件(GameManager中调用)，然后通过LoadPrefab方法来加载AB包，
+ * 
+ * 创建标识：Lorry 2018/1/27
+ **/
+#if ASYNC_MODE
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;

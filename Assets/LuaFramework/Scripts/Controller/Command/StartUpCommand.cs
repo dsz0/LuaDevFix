@@ -2,14 +2,20 @@
 using System.Collections;
 using LuaFramework;
 
-public class StartUpCommand : ControllerCommand {
-
-    public override void Execute(IMessage message) {
+using Consolation;
+public class StartUpCommand : ControllerCommand
+{
+    public override void Execute(IMessage message)
+    {
         if (!Util.CheckEnvironment()) return;
 
-        GameObject gameMgr = GameObject.Find("GlobalGenerator");
-        if (gameMgr != null) {
-            AppView appView = gameMgr.AddComponent<AppView>();
+        GameObject gameMgr = GameObject.Find("Console");
+        if (gameMgr != null)
+        {
+            //AppView appView = 
+            gameMgr.AddComponent<AppView>();
+            //TestConsole console = 
+            gameMgr.AddComponent<TestConsole>();
         }
         //-----------------关联命令-----------------------
         AppFacade.Instance.RegisterCommand(NotiConst.DISPATCH_MESSAGE, typeof(SocketCommand));
