@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace LuaFramework {
     public class SoundManager : Manager {
-        new private AudioSource audio;
+        private AudioSource m_audio;
         private Hashtable sounds = new Hashtable();
 
         void Start() {
-            audio = GetComponent<AudioSource>();
+            m_audio = GetComponent<AudioSource>();
         }
 
         /// <summary>
@@ -54,23 +54,23 @@ namespace LuaFramework {
         /// </summary>
         /// <param name="canPlay"></param>
         public void PlayBacksound(string name, bool canPlay) {
-            if (audio.clip != null) {
-                if (name.IndexOf(audio.clip.name) > -1) {
+            if (m_audio.clip != null) {
+                if (name.IndexOf(m_audio.clip.name) > -1) {
                     if (!canPlay) {
-                        audio.Stop();
-                        audio.clip = null;
+                        m_audio.Stop();
+                        m_audio.clip = null;
                         Util.ClearMemory();
                     }
                     return;
                 }
             }
             if (canPlay) {
-                audio.loop = true;
-                audio.clip = LoadAudioClip(name);
-                audio.Play();
+                m_audio.loop = true;
+                m_audio.clip = LoadAudioClip(name);
+                m_audio.Play();
             } else {
-                audio.Stop();
-                audio.clip = null;
+                m_audio.Stop();
+                m_audio.clip = null;
                 Util.ClearMemory();
             }
         }
