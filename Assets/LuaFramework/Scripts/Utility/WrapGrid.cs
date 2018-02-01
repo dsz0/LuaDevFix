@@ -14,7 +14,7 @@ namespace LuaFramework {
         UIPanel mPanel;
         UIScrollView mScroll;
         bool mHorizontal = false;
-        bool mFirstTime = true;
+        //bool mFirstTime = true;
         List<Transform> mChildren = new List<Transform>();
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace LuaFramework {
 
         protected virtual void Start() {
             InitGrid();
-            mFirstTime = false;
+            //mFirstTime = false;
         }
 
         /// <summary>

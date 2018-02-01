@@ -65,7 +65,7 @@ namespace LuaFramework {
 
             this.OpenCJson();
         }
-
+#pragma warning disable 0162
         /// <summary>
         /// 初始化Lua代码加载路径
         /// </summary>
@@ -78,7 +78,7 @@ namespace LuaFramework {
                 lua.AddSearchPath(Util.DataPath + "lua");
             }
         }
-
+#pragma warning restore 0162
         /// <summary>
         /// 初始化LuaBundle
         /// </summary>
@@ -107,7 +107,7 @@ namespace LuaFramework {
         public void DoFile(string filename) {
             lua.DoFile(filename);
         }
-
+#pragma warning disable 0618
         // Update is called once per frame
         public object[] CallFunction(string funcName, params object[] args) {
             LuaFunction func = lua.GetFunction(funcName);
@@ -116,7 +116,7 @@ namespace LuaFramework {
             }
             return null;
         }
-
+#pragma warning restore 0618
         public void LuaGC() {
             lua.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
         }

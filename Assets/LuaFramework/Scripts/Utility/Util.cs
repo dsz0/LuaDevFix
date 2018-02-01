@@ -23,7 +23,7 @@ namespace LuaFramework
 {
     public class Util
     {
-        private static List<string> luaPaths = new List<string>();
+        //private static List<string> luaPaths = new List<string>();
 
         public static int Int(object o)
         {
@@ -222,7 +222,7 @@ namespace LuaFramework
             LuaManager mgr = AppFacade.Instance.GetManager<LuaManager>(ManagerName.Lua);
             if (mgr != null) mgr.LuaGC();
         }
-
+#pragma warning disable 0162
         /// <summary>
         /// 取得数据存放目录
         /// </summary>
@@ -247,7 +247,7 @@ namespace LuaFramework
                 return "c:/" + game + "/";
             }
         }
-
+#pragma warning restore 0162
         public static string GetRelativePath()
         {
             if (Application.isEditor)

@@ -158,11 +158,13 @@ namespace LuaFramework
         /// </summary>
         IEnumerator OnUpdateResource()
         {
+#pragma warning disable 0162
             if (!AppConst.UpdateMode)
             {
                 OnResourceInited();
                 yield break;
             }
+#pragma warning restore 0162
             string dataPath = Util.DataPath;  //数据目录
             string url = AppConst.WebUrl;
             string message = string.Empty;
@@ -254,16 +256,12 @@ namespace LuaFramework
         /// </summary>
         public void OnResourceInited()
         {
-#if ASYNC_MODE
+//#if ASYNC_MODE 本来这里有两种模式，我现在放弃非ASYNC模式
             ResManager.Initialize(AppConst.AssetDir, delegate ()
             {
                 Debug.Log("Initialize OK!!!");
                 this.OnInitialize();
             });
-#else
-            ResManager.Initialize();
-            this.OnInitialize();
-#endif
         }
 
         void OnInitialize()
