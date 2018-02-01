@@ -62,7 +62,14 @@ public class Packager
     /// </summary>
     public static void BuildAssetResource(BuildTarget target)
     {
+#pragma warning disable 0162
+        if (AppConst.DebugMode)
+        {
+            EditorUtility.DisplayDialog("提示", "处于DebugMode不用打包也能运行！", "确认", "取消");
+            return;
+        }
         UnityEngine.Debug.LogError("Build Res Start>>>" + System.DateTime.Now.ToString());
+#pragma warning restore 0162
 
         if (Directory.Exists(Util.DataPath))
         {//如果数据存放目录存在，先删除，主要考虑测试需要。
@@ -77,6 +84,8 @@ public class Packager
         AssetDatabase.Refresh();
         //清理要创建的Assetbundle列表
         maps.Clear();
+
+#pragma warning disable 0162
         //打包lua代码
         if (AppConst.LuaBundleMode)
         {
@@ -86,7 +95,7 @@ public class Packager
         {
             HandleLuaFile();
         }
-
+#pragma warning restore 0162
         //if (AppConst.ExampleMode)
         //{//打包例子的资源
         //    HandleExampleBundle();
@@ -140,6 +149,7 @@ public class Packager
         string[] srcDirs = { CustomSettings.luaDir, CustomSettings.toluaLuaDir };
         for (int i = 0; i < srcDirs.Length; i++)
         {
+#pragma warning disable 0162
             if (AppConst.LuaByteMode)
             {
                 string sourceDir = srcDirs[i];
@@ -163,6 +173,7 @@ public class Packager
             {
                 ToLuaMenu.CopyLuaBytesFiles(srcDirs[i], streamDir);
             }
+#pragma warning restore 0162
         }
         string[] dirs = Directory.GetDirectories(streamDir, "*", SearchOption.AllDirectories);
         for (int i = 0; i < dirs.Length; i++)
@@ -265,6 +276,7 @@ public class Packager
                 {
                     File.Delete(newpath);
                 }
+#pragma warning disable 0162
                 if (AppConst.LuaByteMode)
                 {
                     EncodeLuaFile(f, newpath);
@@ -273,6 +285,7 @@ public class Packager
                 {
                     File.Copy(f, newpath, true);
                 }
+#pragma warning restore 0162
                 UpdateProgress(n++, files.Count, newpath);
             }
         }
