@@ -82,7 +82,7 @@ public class Packager
         }
         Directory.CreateDirectory(streamPath);
         AssetDatabase.Refresh();
-        //清理要创建的Assetbundle列表
+        //清理Assetbundle列表,待填充。
         maps.Clear();
 
 #pragma warning disable 0162
@@ -144,8 +144,8 @@ public class Packager
         //首先创建临时目录，准备进行lua文件的处理。
         string streamDir = Application.dataPath + "/" + AppConst.LuaTempDir;
         if (!Directory.Exists(streamDir)) Directory.CreateDirectory(streamDir);
-
-        //首先将lua文件全部拷贝到临时目录
+        UnityEngine.Debug.LogWarning("开始打包Lua,创建临时目录：" + streamDir);
+        //首先将lua文件全部拷贝到临时目录中
         string[] srcDirs = { CustomSettings.luaDir, CustomSettings.toluaLuaDir };
         for (int i = 0; i < srcDirs.Length; i++)
         {

@@ -11,7 +11,7 @@ namespace LuaFramework {
         {
             //强制设一次屏幕分辨率
             Screen.SetResolution(1280, 720, true);
-            Invoke("RealStart", 0.3f);
+            Invoke("RealStart", 0.1f);
         }
 
         void RealStart()

@@ -45,7 +45,7 @@ namespace LuaFramework {
 
         // Load AssetBundleManifest.
         public void Initialize(string manifestName, Action initOK) {
-            m_BaseDownloadingURL = Util.GetRelativePath();
+            m_BaseDownloadingURL = Util.GetRelativePath(); Debug.LogWarning("m_BaseDownloadingURL：" + m_BaseDownloadingURL);
             LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate(UObject[] objs) {
                 if (objs.Length > 0) {
                     m_AssetBundleManifest = objs[0] as AssetBundleManifest;

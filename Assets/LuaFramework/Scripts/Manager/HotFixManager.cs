@@ -41,12 +41,12 @@ namespace LuaFramework
         void Update()
         {
             //判断异步对象并且异步对象没有加载完毕，显示进度    
-            if (downloadOperation != null && !downloadOperation.isDone)
-            {
-                string message = string.Format("下载进度:{0:F}%", downloadOperation.progress * 100.0);
-                Debugger.Log(downloadOperation.url + message); 
-                facade.SendMessageCommand(NotiConst.UPDATE_SPEED, message);
-            }
+            //if (downloadOperation != null && !downloadOperation.isDone)
+            //{
+                //string message = string.Format("下载进度:{0:F}%", downloadOperation.progress * 100.0);
+                //Debugger.Log(message); 
+                //facade.SendMessageCommand(NotiConst.UPDATE_SPEED, message);
+            //}
         }
         /// <summary>
         /// 初始化
@@ -66,7 +66,8 @@ namespace LuaFramework
         public void CheckExtractResource()
         {
             hadExtractResource = Directory.Exists(Util.DataPath) &&
-              Directory.Exists(Util.DataPath + "lua/") && File.Exists(Util.DataPath + "files.txt");
+              Directory.Exists(Util.DataPath + "lua/") &&
+              File.Exists(Util.DataPath + "files.txt");
             if (hadExtractResource || AppConst.DebugMode)
             { //文件已经解压过了，这里还可以添加检查文件列表逻辑
                 StartCoroutine(OnUpdateResource());
@@ -77,8 +78,8 @@ namespace LuaFramework
 
         IEnumerator OnExtractResource()
         {
-            string dataPath = Util.DataPath;  //数据目录
             string resPath = Util.AppContentPath(); //程序包中的资源目录(不可修改)
+            string dataPath = Util.DataPath;  //数据目录
 
             if (Directory.Exists(dataPath)) Directory.Delete(dataPath, true);
             Directory.CreateDirectory(dataPath);
@@ -164,18 +165,18 @@ namespace LuaFramework
                 OnResourceInited();
                 yield break;
             }
-#pragma warning restore 0162
             string dataPath = Util.DataPath;  //数据目录
             string url = AppConst.WebUrl;
             string message = string.Empty;
             string random = DateTime.Now.ToString("yyyymmddhhmmss");
             string listUrl = url + "files.txt?v=" + random;
-            Debug.LogWarning("LoadUpdate---->>>" + listUrl);
+            Debug.LogWarning("Down files.txt -->>" + listUrl);
+#pragma warning restore 0162
 
             WWW www = new WWW(listUrl); yield return www;
             if (www.error != null)
             {
-                facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "更新files.txt文件失败！热更无法继续");
+                facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "更新files.txt失败！热更中断：" + www.error);
                 yield break;
             }
             if (!Directory.Exists(dataPath))
@@ -186,12 +187,13 @@ namespace LuaFramework
             File.WriteAllBytes(dataPath + "files.txt", www.bytes);
             string filesText = www.text;
             string[] files = filesText.Split('\n');
-
+            Debug.LogWarning("Write files.txt To-->>" + dataPath);
             //这里修改了luaFramework的原始流程，先把所有的操作动作存下来。
             List<string> willDownLoadUrl = new List<string>();//from  
             List<string> willDownLoadFileName = new List<string>();
             List<string> willDownLoadDestination = new List<string>();//to  
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "分析需要更新的文件");
+            Debug.LogWarning("分析需要更新的文件:" + files.Length);
             for (int i = 0; i < files.Length; i++)
             {//分析每一个文件是否需要更新
                 if (string.IsNullOrEmpty(files[i])) continue;
@@ -210,7 +212,7 @@ namespace LuaFramework
                     string remoteMd5 = keyValue[1].Trim();
                     string localMd5 = Util.md5file(localfile);
                     canUpdate = !remoteMd5.Equals(localMd5);
-                    if (canUpdate) File.Delete(localfile); //md5码不同，把本地文件删除，接下来会更新这个文件。
+                    if (canUpdate) File.Delete(localfile); //md5码不同，把本地文件删除，接下来会下载这个文件。
                 }
                 if (canUpdate)
                 {
@@ -228,10 +230,14 @@ namespace LuaFramework
             {
                 facade.SendMessageCommand(NotiConst.UPDATE_ALL_COUNT, willDownLoadUrl.Count);
             }
+            else
+            {
+                Debug.LogWarning("分析完毕，没有文件需要更新！");
+            }
             //这里是对比后需要更新的资源文件，TODO:用线程下载
             for (int i = 0; i < willDownLoadUrl.Count; i++)
             {
-                Debug.Log("要下载的文件：" + willDownLoadUrl[i]);
+                Debug.Log("下载：" + willDownLoadUrl[i]);
                 facade.SendMessageCommand(NotiConst.UPDATE_FILE_NAME, willDownLoadFileName[i]);
                 downloadOperation = new WWW(willDownLoadUrl[i]);
                 yield return downloadOperation;
@@ -240,13 +246,15 @@ namespace LuaFramework
                     facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "更新失败!>" + willDownLoadFileName[i]);
                     yield break;
                 }
+                
+                Debug.Log("写入size["+ downloadOperation.size+"]:" + willDownLoadDestination[i]);
                 File.WriteAllBytes(willDownLoadDestination[i], downloadOperation.bytes);
-                downloadOperation = null;//避免update循环中判断过多
+                //downloadOperation = null;//避免update循环中判断过多
                 facade.SendMessageCommand(NotiConst.UPDATE_FINISH_ONE, 0);
             }
             yield return new WaitForEndOfFrame();
 
-            message = "更新完成!!";
+            message = "资源更新完成!!";
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, message);
             OnResourceInited();
         }

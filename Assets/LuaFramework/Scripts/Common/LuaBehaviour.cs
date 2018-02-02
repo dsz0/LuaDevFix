@@ -69,13 +69,13 @@ namespace LuaFramework {
             buttons.Clear();
         }
 
-        //-----------------------------------------------------------------
+        //在销毁的时候可以销毁AssetBundle,也可以有其他选择--------------------
         protected void OnDestroy() {
             ClearClick();
-#if ASYNC_MODE
+//#if ASYNC_MODE
             string abName = name.ToLower().Replace("panel", "");
             ResManager.UnloadAssetBundle(abName + AppConst.ExtName);
-#endif
+//#endif
             Util.ClearMemory();
             Debug.Log("~" + name + " was destroy!");
         }

@@ -59,7 +59,10 @@ namespace Consolation
 
         readonly List<Log> logs = new List<Log>();
         Vector2 scrollPosition;
-        bool visible = false;
+        /// <summary>
+        /// 是否可见
+        /// </summary>
+        public bool Visible = false;
         bool collapse;
 
         // Visual elements:  
@@ -107,18 +110,18 @@ namespace Consolation
         {
             if (Input.GetKeyDown(toggleKey))
             {
-                visible = !visible;
+                Visible = !Visible;
             }
 
             if (shakeToOpen && Input.acceleration.sqrMagnitude > shakeAcceleration)
             {
-                visible = true;
+                Visible = true;
             }
         }
 
         void OnGUI()
         {
-            if (!visible)
+            if (!Visible)
             {
                 return;
             }
@@ -194,7 +197,7 @@ namespace Consolation
 
             if (GUILayout.Button(closeLabel))
             {
-                visible = false;
+                Visible = false;
             }
 
             collapse = GUILayout.Toggle(collapse, collapseLabel, GUILayout.ExpandWidth(false));
