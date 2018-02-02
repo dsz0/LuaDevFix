@@ -18,6 +18,8 @@ end
 function ActivityDailyPanel.InitPanel()
 	this.btnOpen = transform:Find("Open").gameObject;
 	this.gridParent = transform:Find('ScrollView/Grid');
+	this.title = transform:Find("txt_title");
+	this.msg = transform:Find("txt_msg");
 end
 
 --销毁调用函数--

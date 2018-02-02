@@ -45,7 +45,7 @@ function ActivityDailyCtrl.InitPanel(objs)
     prompt:AddClick(go, this.OnItemClick);
 
     local label = go.transform:Find('Label');
-    label:GetComponent('UILabel').text = tostring(i);
+    label:GetComponent('UILabel').text = tostring(i*7);
 	end
   local grid = parent:GetComponent('UIGrid');
 	grid:Reposition();
@@ -60,12 +60,14 @@ end
 
 --滚动项单击--
 function ActivityDailyCtrl.OnItemClick(go)
+		ActivityDailyPanel.title:GetComponent('UILabel').text = "点中了"..go.name;
     log(go.name);
 end
 
 --单击事件--
 function ActivityDailyCtrl.OnClick(go)
   logWarn("OnClick---->>>"..go.name);
+	ActivityDailyPanel.msg:GetComponent('UILabel').text = "你已经测试过Btn点击";
 	local ctrl = CtrlManager.GetCtrl(CtrlNames.Tips);
 	if ctrl ~= nil then
 			ctrl:Awake();
