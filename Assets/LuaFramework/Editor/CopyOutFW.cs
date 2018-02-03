@@ -82,11 +82,11 @@ public class CopyOutFW : EditorWindow
     {
         string destPath = this.pathToStoreFramework + "/";  //目标路径
 
-        string editorPath = basePath + "Editor/";   //在develop版本不打包不用拷贝
-        string luajitPath = basePath + "Luajit/";   //在develop版本不打包这个也不用拷贝
+        //string editorPath = basePath + "Editor/";   //在develop版本不打包不用拷贝
+        //string luajitPath = basePath + "Luajit/";   //在develop版本不打包这个也不用拷贝
 
-        string resourcesPath = basePath + "Resources/"; //暂无有用资源可以忽略
-        string scenesPath = basePath + "Scenes/";   //这个暂时只用于测试可不拷贝
+        //string resourcesPath = basePath + "Resources/"; //暂无有用资源可以忽略
+        //string scenesPath = basePath + "Scenes/";   //这个暂时只用于测试可不拷贝
 
         string scriptsPath = basePath + "Scripts/"; //
         string toLuaPath = basePath + "ToLua/";     //基本不会变除非Tolua升级
@@ -103,21 +103,42 @@ public class CopyOutFW : EditorWindow
             for (int i = 0; i < files.Count; i++)
             {
                 string newfile;
+                string newpath;
                 if (files[i].Contains("AppConst.cs"))
                 {
                     Debug.LogWarning("特殊处理AppConst.cs:" + files[i]);
                     newfile = files[i].Substring(files[i].LastIndexOf("/")+1);
-                    Debug.LogWarning(newfile);
+                    newpath = destPath + newfile;
+                    if (File.Exists(newpath)) File.Delete(newpath);
+
+                    //string[] codelines = File.ReadAllLines(files[i]);
+                    //FileStream fs = new FileStream(newpath, FileMode.CreateNew);
+                    //StreamWriter sw = new StreamWriter(fs);
+                    //for (int j = 0; j < codelines.Length; j++)
+                    //{
+                    //    string codeline = codelines[j];
+                    //    //string ext = Path.GetExtension(file);
+                    //    if(codeline.Contains("\"LuaFramework\""))
+                    //    {
+                    //        codeline = codeline.Replace("LuaFramework", "LuaRaz");
+                    //        Debug.LogWarning(newfile + ":LuaRaz 已替换 ");
+                    //    }
+                    //    sw.WriteLine(codeline);
+                    //}
+                    //sw.Close(); fs.Close();
+                    string codes = File.ReadAllText(files[i]);
+                    codes = codes.Replace("\"LuaFramework\"", "\"LuaRaz\"");
+                    File.WriteAllText(newpath, codes);
                 }
                 else
                 {
                     newfile = files[i].Replace(basePath, "");
+                    newpath = destPath + newfile;
+                    //Debug.Log("Try Copy:" + files[i] + "[to]" + newpath);
+                    string path = Path.GetDirectoryName(newpath);
+                    if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                    File.Copy(files[i], newpath, true);
                 }
-                string newpath = destPath + newfile;
-                //Debug.Log("Try Copy:" + files[i] + "[to]" + newpath);
-                string path = Path.GetDirectoryName(newpath);
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                File.Copy(files[i], newpath, true);
                 UpdateProgress(i, files.Count, newpath);
             }
         }

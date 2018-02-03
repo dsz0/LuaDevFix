@@ -14,6 +14,7 @@ public static class LuaBinder
 		UIPanelWrap.Register(L);
 		UILabelWrap.Register(L);
 		UIGridWrap.Register(L);
+		AppConstWrap.Register(L);
 		UIRectWrap.Register(L);
 		UIWidgetWrap.Register(L);
 		UIWidgetContainerWrap.Register(L);
@@ -95,7 +96,6 @@ public static class LuaBinder
 		L.BeginModule("LuaFramework");
 		LuaFramework_UtilWrap.Register(L);
 		LuaFramework_WrapGridWrap.Register(L);
-		LuaFramework_AppConstWrap.Register(L);
 		LuaFramework_LuaHelperWrap.Register(L);
 		LuaFramework_ByteBufferWrap.Register(L);
 		LuaFramework_LuaBehaviourWrap.Register(L);

@@ -2,8 +2,8 @@
 
 public static class LuaConst
 {
-    public static string luaDir = LuaFramework.AppConst.FrameworkRoot + "/Lua";//  Application.dataPath + "/LuaFramework/Lua";
-    public static string toluaDir = LuaFramework.AppConst.FrameworkRoot + "/ToLua/Lua";//Application.dataPath + "/LuaFramework/ToLua/Lua";
+    public static string luaDir = AppConst.FrameworkRoot + "/Lua";//  Application.dataPath + "/LuaFramework/Lua";
+    public static string toluaDir = AppConst.FrameworkRoot + "/ToLua/Lua";//Application.dataPath + "/LuaFramework/ToLua/Lua";
 
 #if UNITY_STANDALONE
     public static string osDir = "Win";

@@ -163,7 +163,7 @@ public class AddBuildMapUtil : EditorWindow
     void AutoFill(int index, Object selectedObject)
     {
         string path = AssetDatabase.GetAssetPath(selectedObject);
-        bundleNameList[index] = path.Remove(0, path.LastIndexOf("/") + 1).ToLower() + LuaFramework.AppConst.ExtName;
+        bundleNameList[index] = path.Remove(0, path.LastIndexOf("/") + 1).ToLower() + AppConst.ExtName;
 
         string[] files = Directory.GetFiles(path);
         string[] temp = files[0].Split('.');
