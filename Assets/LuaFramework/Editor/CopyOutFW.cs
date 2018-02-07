@@ -22,16 +22,6 @@ public class CopyOutFW : EditorWindow
     private string pathToStoreFramework = "C:/HotFix/LuaRaz";
     //private string pathToStoreHotFix = "c:/LuaRazHotFix";
 
-    static string[] exts = { ".txt", ".xml", ".lua", ".csv", ".json" };
-    static bool CanCopy(string ext)
-    {   //能不能复制
-        foreach (string e in exts)
-        {
-            if (ext.Equals(e)) return true;
-        }
-        return false;
-    }
-
     [MenuItem("LuaRaziel/CopyOutFrameWork", false, 10)]
     public static void CopyOutFrameWork()
     {
