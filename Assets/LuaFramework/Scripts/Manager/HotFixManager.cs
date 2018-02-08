@@ -27,6 +27,14 @@ namespace LuaFramework
         bool hadExtractResource;
         //bool firstExtractResource = true;
         /// <summary>
+        /// 包内资源的版本
+        /// </summary>
+        string m_InVersion = "0.0.0";
+        /// <summary>
+        /// 数据目录资源版本(更新到的)
+        /// </summary>
+        string m_DataVersion = "0.0.0";
+        /// <summary>
         /// 异步加载对象
         /// </summary>
         WWW downloadOperation;
@@ -117,10 +125,12 @@ namespace LuaFramework
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "开始内部文件解包");
             //释放所有文件到数据目录
             string[] files = File.ReadAllLines(outfile);
-            facade.SendMessageCommand(NotiConst.EXTRACT_ALL_COUNT, files.Length);
-            foreach (var file in files)
+            facade.SendMessageCommand(NotiConst.EXTRACT_ALL_COUNT, files.Length-1);
+            //foreach (var file in files)
+            m_InVersion = files[0];
+            for (int i = 1; i < files.Length; i++)
             {
-                string[] fs = file.Split('|');
+                string[] fs = files[i].Split('|');
                 infile = resPath + fs[0];  //
                 outfile = dataPath + fs[0];
 
@@ -197,13 +207,14 @@ namespace LuaFramework
             string filesText = www.text;
             string[] files = filesText.Split('\n');
             Debug.LogWarning("Write files.txt To-->>" + dataPath);
+            m_DataVersion = files[0];
             //这里修改了luaFramework的原始流程，先把所有的操作动作存下来。
             List<string> willDownLoadUrl = new List<string>();//from  
             List<string> willDownLoadFileName = new List<string>();
             List<string> willDownLoadDestination = new List<string>();//to  
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "分析需要更新的文件");
             Debug.LogWarning("分析需要更新的文件:" + files.Length);
-            for (int i = 0; i < files.Length; i++)
+            for (int i = 1; i < files.Length; i++)
             {//分析每一个文件是否需要更新
                 if (string.IsNullOrEmpty(files[i])) continue;
                 string[] keyValue = files[i].Split('|');
@@ -273,6 +284,8 @@ namespace LuaFramework
         /// </summary>
         public void OnResourceInited()
         {
+            //TODO：显示In Version[1.5.3] Update Version[1.5.7]
+            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "In[" + m_InVersion +"]Update[" + m_DataVersion +"]");
 //#if ASYNC_MODE 本来这里有两种模式，我现在放弃非ASYNC模式
             //ResManager.Initialize(AppConst.AssetDir, delegate ()
             ResManager.Initialize(Util.GetPlatformName(), delegate ()

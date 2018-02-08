@@ -37,7 +37,7 @@ public class PackDialog : EditorWindow
             }
         }
         GUILayout.Label("现在打包版本为当前Editor设置的平台");
-        GUILayout.Label("上面打包按钮，每次打包自动更新当前的小版本号！！");
+        GUILayout.Label("注意，上面按钮打包会自动更新当前的小版本号！！");
         if (GUILayout.Button("还原当Version号"))
         {
             EditorUtil.BundleTime = 0;
@@ -56,6 +56,7 @@ public class PackDialog : EditorWindow
             }
         }
         GUILayout.Label("下面按钮会打包到路径：" + pathToStoreAB);
+        GUILayout.Label("当前Lua包版本号：" + EditorUtil.luaPackVersion);
         if (GUILayout.Button("选择打包目录"))
         {
             pathToStoreAB = EditorUtility.OpenFolderPanel("选择你想拷贝到的目录", pathToStoreAB, "");

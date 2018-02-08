@@ -4,6 +4,7 @@
  * 使用方法：在编辑器Editor的,LuaRaziel菜单下点击对应运行平台构建资源即可。
  * 结束会输出"Build Res Finish!!"
  * 创建标识：Lorry 2018/1/26
+ * 修改标识：打包可以指定打包根目录，在Files.txt中添加版本号。Lorry 2018/2/08
  **/
 using UnityEditor;
 using UnityEngine;
@@ -336,6 +337,7 @@ public class Packager
 
         FileStream fs = new FileStream(newFilePath, FileMode.CreateNew);
         StreamWriter sw = new StreamWriter(fs);
+        sw.WriteLine(EditorUtil.luaPackVersion);
         for (int i = 0; i < files.Count; i++)
         {
             string file = files[i];
