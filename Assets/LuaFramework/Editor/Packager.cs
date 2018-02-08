@@ -20,7 +20,6 @@ public class Packager
     static List<string> paths = new List<string>();
     static List<string> files = new List<string>();
     static List<AssetBundleBuild> maps = new List<AssetBundleBuild>();
-
     ///-----------------------------------------------------------
     static string[] exts = { ".txt", ".xml", ".lua", ".assetbundle", ".json" };
     static bool CanCopy(string ext)
@@ -32,55 +31,76 @@ public class Packager
         return false;
     }
 
+    const string kDebugMode = "LuaRaziel/DebugMode";
 
-    [MenuItem("LuaRaziel/Build iPhone Resource", false, 100)]
-    public static void BuildiPhoneResource()
+    [MenuItem(kDebugMode,false,11)]
+    public static void ToggleSimulationMode()
     {
-        BuildTarget target;
-#if UNITY_5
-        target = BuildTarget.iOS;
-#else
-        target = BuildTarget.iPhone;
-#endif
-        BuildAssetResource(target);
+        EditorUtil.DevelopMode = !EditorUtil.DevelopMode;
     }
 
-    [MenuItem("LuaRaziel/Build Android Resource", false, 101)]
-    public static void BuildAndroidResource()
+    [MenuItem(kDebugMode, true, 11)]
+    public static bool ToggleSimulationModeValidate()
     {
-        BuildAssetResource(BuildTarget.Android);
+        Menu.SetChecked(kDebugMode, EditorUtil.DevelopMode);
+        return true;
     }
 
-    [MenuItem("LuaRaziel/Build Windows Resource", false, 102)]
-    public static void BuildWindowsResource()
-    {
-        BuildAssetResource(BuildTarget.StandaloneWindows);
-    }
+//    [MenuItem("LuaRaziel/Build iPhone Resource", false, 100)]
+//    public static void BuildiPhoneResource()
+//    {
+//        BuildTarget target;
+//#if UNITY_5
+//        target = BuildTarget.iOS;
+//#else
+//        target = BuildTarget.iPhone;
+//#endif
+//        BuildAssetResource(target);
+//    }
+
+//    [MenuItem("LuaRaziel/Build Android Resource", false, 101)]
+//    public static void BuildAndroidResource()
+//    {
+//        BuildAssetResource(BuildTarget.Android);
+//    }
+
+//    [MenuItem("LuaRaziel/Build Windows Resource", false, 102)]
+//    public static void BuildWindowsResource()
+//    {
+//        BuildAssetResource(BuildTarget.StandaloneWindows);
+//    }
 
     /// <summary>
     /// 生成更新包的资源（素材）
     /// </summary>
-    public static void BuildAssetResource(BuildTarget target)
+    /// <param name="pResPath">当前打包资源的路径</param>
+    public static bool BuildAssetResource(BuildTarget target, string pResPath = null)
     {
-#pragma warning disable 0162
-        if (AppConst.DebugMode)
+#if UNITY_EDITOR
+        if (EditorUtil.DevelopMode)
         {
-            EditorUtility.DisplayDialog("提示", "处于DebugMode不用打包也能运行！", "确认", "取消");
-            return;
+            if (EditorUtility.DisplayDialog("提示", "处于DebugMode不用打包也能运行！", "取消打包", "继续打包"))
+            {
+                return false;
+            }
         }
-        UnityEngine.Debug.LogError("Build Res Start>>>" + System.DateTime.Now.ToString());
-#pragma warning restore 0162
+#endif
+        if (pResPath == null)
+            pResPath = Application.dataPath.Replace("Assets", EditorUtil.BundlePath);
 
-        if (Directory.Exists(Util.DataPath))
-        {//如果数据存放目录存在，先删除，主要考虑测试需要。
-            Directory.Delete(Util.DataPath, true);
+        UnityEngine.Debug.LogError("Build Res Start>>>" + System.DateTime.Now.ToString());
+
+        if (Directory.Exists(pResPath))
+        {//如果版本数据存放目录存在，先删除，莫名其妙的版本资源错误。
+            Directory.Delete(pResPath, true);
+            UnityEngine.Debug.LogWarning("Delete 目标 ResPath>>>" + pResPath);
         }
-        string streamPath = Application.streamingAssetsPath;
-        if (Directory.Exists(streamPath))
-        {//如果游戏包资源目录存在，也先删除(因为两次很可能是打包不同平台的资源，不删除也可能会出问题)
-            Directory.Delete(streamPath, true);
-        }
-        Directory.CreateDirectory(streamPath);
+        //string streamPath = Application.streamingAssetsPath;
+        //if (Directory.Exists(streamPath))
+        //{//如果游戏包资源目录存在，也先删除(因为两次很可能是打包不同平台的资源，不删除也可能会出问题)
+        //    Directory.Delete(streamPath, true);
+        //}
+        //Directory.CreateDirectory(streamPath);
         AssetDatabase.Refresh();
         //清理Assetbundle列表,待填充。
         maps.Clear();
@@ -89,11 +109,11 @@ public class Packager
         //打包lua代码
         if (AppConst.LuaBundleMode)
         {
-            HandleLuaBundle();
+            HandleLuaBundle(pResPath);
         }
         else
         {
-            HandleLuaFile();
+            HandleLuaFile(pResPath);
         }
 #pragma warning restore 0162
         //if (AppConst.ExampleMode)
@@ -101,24 +121,33 @@ public class Packager
         //    HandleExampleBundle();
         //}
         HandleCsvBundle();
-
-        string resPath = "Assets/" + AppConst.AssetDir;
-        BuildPipeline.BuildAssetBundles(resPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
-        BuildFileIndex();
+        try
+        {
+            //string resPath = "Assets/" + AppConst.AssetDir;
+            BuildPipeline.BuildAssetBundles(pResPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
+            //resPath = AppDataPath + "/" + AppConst.AssetDir + "/";
+        }catch(System.Exception e)
+        {
+            UnityEngine.Debug.LogError(e.Message + "| Delete OutputPath:" + pResPath);
+            Directory.Delete(pResPath, true);
+            return false;
+        }
+        BuildFileIndex(pResPath);
         //打包完成了，干掉打包lua代码时生成的临时目录
         string streamDir = Application.dataPath + "/" + AppConst.LuaTempDir;
         if (Directory.Exists(streamDir))
         {
+            UnityEngine.Debug.LogWarning("打包技术，删除临时目录：" + streamDir);
             Directory.Delete(streamDir, true);
         }
         AssetDatabase.Refresh();
-        
-        UnityEngine.Debug.LogError("Build Res Finish>>>" + System.DateTime.Now.ToString());
+        UnityEngine.Debug.LogError("Build Finish>>>" + pResPath +"|" + System.DateTime.Now.ToString());
+        return true;
     }
     /// <summary>
     /// 将指定目录下所有对应扩展名的对象，打包到bundleName命名的AssetBundle包中。
     /// </summary>
-    /// <param name="bundleName"></param>
+    /// <param name="bundleName">包名</param>
     /// <param name="pattern">需要打包的类型文件格式</param>
     /// <param name="path">需要打包的目录</param>
     static void AddBuildMap(string bundleName, string pattern, string path)
@@ -139,7 +168,7 @@ public class Packager
     /// <summary>
     /// 处理Lua代码包
     /// </summary>
-    static void HandleLuaBundle()
+    static void HandleLuaBundle(string pNowResPath)
     {
         //首先创建临时目录，准备进行lua文件的处理。
         string streamDir = Application.dataPath + "/" + AppConst.LuaTempDir;
@@ -184,11 +213,11 @@ public class Packager
 
             string path = "Assets" + dirs[i].Replace(Application.dataPath, "");
             AddBuildMap(name, "*.bytes", path);
-        }
+        }//for循环中处理完所有子目录中的lua文件打包.下面把根目录的lua文件都打包到lua.unity3d文件中
         AddBuildMap("lua/lua" + AppConst.ExtName, "*.bytes", "Assets/" + AppConst.LuaTempDir);
 
         //-------------------------------处理非Lua文件----------------------------------
-        string luaPath = AppDataPath + "/StreamingAssets/lua/";
+        string luaPath = pNowResPath + "/lua/";//AppDataPath + "/StreamingAssets/lua/";
         for (int i = 0; i < srcDirs.Length; i++)
         {
             paths.Clear(); files.Clear();
@@ -209,13 +238,13 @@ public class Packager
     }
 
     /// <summary>
-    /// 处理框架范例包，这是luaFrameWork的原始例子打包代码。
+    /// 处理框架范例包，这是luaFrameWork的原始例子打包代码。现在已经不再使用。
     /// 请注意这里的打包粒度，下面的prompt_asset即使不单独打包，也没有问题。但是包的粒度会变大。
     /// 不利于内存管理和资源共用，还有可能出现重复打包的资源。
     /// </summary>
-    static void HandleExampleBundle()
+    static void HandleExampleBundle(string pNowResPath)
     {
-        string resPath = AppDataPath + "/" + AppConst.AssetDir + "/";
+        string resPath = pNowResPath;// AppDataPath + "/" + AppConst.AssetDir + "/";
         if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
 
         AddBuildMap("prompt" + AppConst.ExtName, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
@@ -230,7 +259,7 @@ public class Packager
     /// </summary>
     static void HandleCsvBundle()
     {
-        string content = File.ReadAllText(Application.dataPath + "\\" + AppConst.AppName + "\\" + "HotRes" + "/AssetBundleInfo.csv");
+        string content = File.ReadAllText(Application.dataPath + "/" + AppConst.AppName + "/" + "HotRes" + "/AssetBundleInfo.csv");
         string[] contents = content.Split(new string[] { "\r\n" }, System.StringSplitOptions.RemoveEmptyEntries);
         for (int i = 0; i < contents.Length; i++)
         {
@@ -243,10 +272,10 @@ public class Packager
     /// <summary>
     /// 处理Lua文件
     /// </summary>
-    static void HandleLuaFile()
+    static void HandleLuaFile(string pNowResPath)
     {
-        string resPath = AppDataPath + "/StreamingAssets/";
-        string luaPath = resPath + "/lua/";
+        //string resPath = AppDataPath + "/StreamingAssets/";
+        string luaPath = pNowResPath + "/lua/";
 
         //----------复制Lua文件----------------
         if (!Directory.Exists(luaPath))
@@ -294,11 +323,10 @@ public class Packager
     }
 
     /// <summary>
-    /// 创建文件索引，用于游戏更新时进行对比。
+    /// 制作好的assetbundle目录创建文件索引，用于游戏更新时进行对比。
     /// </summary>
-    static void BuildFileIndex()
+    static void BuildFileIndex(string resPath)
     {
-        string resPath = AppDataPath + "/StreamingAssets/";
         ///----------------------创建文件列表-----------------------
         string newFilePath = resPath + "/files.txt";
         if (File.Exists(newFilePath)) File.Delete(newFilePath);

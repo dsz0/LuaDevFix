@@ -54,9 +54,18 @@ namespace LuaFramework
         void Init()
         {
             DontDestroyOnLoad(gameObject);  //防止销毁自己
-            CheckExtractResource(); //释放资源
+
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Application.targetFrameRate = AppConst.GameFrameRate;
+#if UNITY_EDITOR
+            if (EditorUtil.DevelopMode)
+            {
+                //OnResourceInited(); 如果是模拟调试，不需要载入Manifest
+                OnInitialize();
+                return;
+            }
+#endif
+            CheckExtractResource(); //释放资源
         }
 
 
@@ -68,7 +77,7 @@ namespace LuaFramework
             hadExtractResource = Directory.Exists(Util.DataPath) &&
               Directory.Exists(Util.DataPath + "lua/") &&
               File.Exists(Util.DataPath + "files.txt");
-            if (hadExtractResource || AppConst.DebugMode)
+            if (hadExtractResource)//|| AppConst.DebugMode)
             { //文件已经解压过了，这里还可以添加检查文件列表逻辑
                 StartCoroutine(OnUpdateResource());
                 return;
@@ -265,7 +274,8 @@ namespace LuaFramework
         public void OnResourceInited()
         {
 //#if ASYNC_MODE 本来这里有两种模式，我现在放弃非ASYNC模式
-            ResManager.Initialize(AppConst.AssetDir, delegate ()
+            //ResManager.Initialize(AppConst.AssetDir, delegate ()
+            ResManager.Initialize(Util.GetPlatformName(), delegate ()
             {
                 Debug.Log("Initialize OK!!!");
                 this.OnInitialize();

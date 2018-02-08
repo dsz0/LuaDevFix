@@ -14,11 +14,9 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using LuaInterface;
 using LuaFramework;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
 namespace LuaFramework
 {
     public class Util
@@ -222,7 +220,7 @@ namespace LuaFramework
             LuaManager mgr = AppFacade.Instance.GetManager<LuaManager>(ManagerName.Lua);
             if (mgr != null) mgr.LuaGC();
         }
-#pragma warning disable 0162
+
         /// <summary>
         /// 取得数据存放目录
         /// </summary>
@@ -231,27 +229,29 @@ namespace LuaFramework
             get
             {
                 string game = AppConst.AppName.ToLower();
-                if (Application.isMobilePlatform)
-                {
-                    return Application.persistentDataPath + "/" + game + "/";
-                }
-                if (AppConst.DebugMode)
-                {
-                    return Application.dataPath + "/" + AppConst.AssetDir + "/";
-                }
+#if UNITY_EDITOR
+                //if (EditorUtil.DebugMode)
+                //{
+                //    return Application.dataPath + "/" + AppConst.AssetDir + "/";
+                //}
                 if (Application.platform == RuntimePlatform.OSXEditor)
                 {
                     int i = Application.dataPath.LastIndexOf('/');
                     return Application.dataPath.Substring(0, i + 1) + game + "/";
                 }
+#endif
+                if (Application.isMobilePlatform)
+                {
+                    return Application.persistentDataPath + "/" + game + "/";
+                }
                 return "c:/" + game + "/";
             }
         }
-#pragma warning restore 0162
+
         public static string GetRelativePath()
         {
             if (Application.isEditor)
-                return "file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/Assets/" + AppConst.AssetDir + "/";
+                return "file://" + DataPath;//System.Environment.CurrentDirectory.Replace("\\", "/") + "/Assets/" + AppConst.AssetDir + "/";
             else if (Application.isMobilePlatform || Application.isConsolePlatform)
                 return "file:///" + DataPath;
             else // For standalone player.
@@ -289,7 +289,7 @@ namespace LuaFramework
         }
 
         /// <summary>
-        /// 应用程序内容路径
+        /// 应用程序内部文件路径
         /// </summary>
         public static string AppContentPath()
         {
@@ -303,7 +303,7 @@ namespace LuaFramework
                     path = Application.dataPath + "/Raw/";
                     break;
                 default:
-                    path = Application.dataPath + "/" + AppConst.AssetDir + "/";
+                    path = Application.dataPath + "/StreamingAssets/";//"/" + AppConst.AssetDir + "/";
                     break;
             }
             return path;
@@ -331,21 +331,26 @@ namespace LuaFramework
         public static int CheckRuntimeFile()
         {
             if (!Application.isEditor) return 0;
-            string streamDir = Application.dataPath + "/StreamingAssets/";
-            if (!Directory.Exists(streamDir))
-            {
-                return -1;
-            }
-            else
-            {
-                string[] files = Directory.GetFiles(streamDir);
-                if (files.Length == 0) return -1;
-
-                if (!File.Exists(streamDir + "files.txt"))
+#if UNITY_EDITOR
+            if (!EditorUtil.DevelopMode)
+            {//非开发模式下才检查是否已经打包,TODO：需要按平台来判断是否已经打包
+                string streamDir = Application.dataPath + "/StreamingAssets/";
+                if (!Directory.Exists(streamDir))
                 {
                     return -1;
                 }
+                else
+                {
+                    string[] files = Directory.GetFiles(streamDir);
+                    if (files.Length == 0) return -1;
+
+                    if (!File.Exists(streamDir + "files.txt"))
+                    {
+                        return -1;
+                    }
+                }
             }
+#endif
             string sourceDir = AppConst.FrameworkRoot + "/ToLua/Source/Generate/";
             if (!Directory.Exists(sourceDir))
             {
@@ -397,5 +402,64 @@ namespace LuaFramework
 #endif
             return true;
         }
+        /// <summary>
+        /// 获得当前平台名称（1.根据平台打包；2.根据平台获得资源)
+        /// </summary>
+        public static string GetPlatformName()
+        {
+#if UNITY_EDITOR
+            return GetPlatformForAssetBundles(EditorUserBuildSettings.activeBuildTarget);
+#else
+			return GetPlatformForAssetBundles(Application.platform);
+#endif
+        }
+
+#if UNITY_EDITOR
+        private static string GetPlatformForAssetBundles(BuildTarget target)
+        {
+            switch (target)
+            {
+                case BuildTarget.Android:
+                    return "Android";
+                case BuildTarget.iOS:
+                    return "iOS";
+                case BuildTarget.WebGL:
+                    return "WebGL";
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return "Windows";
+                case BuildTarget.StandaloneOSXIntel:
+                case BuildTarget.StandaloneOSXIntel64:
+                case BuildTarget.StandaloneOSXUniversal:
+                    return "OSX";
+                // Add more build targets for your own.
+                // If you add more targets, don't forget to add the same platforms to GetPlatformForAssetBundles(RuntimePlatform) function.
+                default:
+                    return null;
+            }
+        }
+#endif
+        private static string GetPlatformForAssetBundles(RuntimePlatform platform)
+        {
+            switch (platform)
+            {
+                case RuntimePlatform.Android:
+                    return "Android";
+                case RuntimePlatform.IPhonePlayer:
+                    return "iOS";
+                case RuntimePlatform.WebGLPlayer:
+                    return "WebGL";
+                case RuntimePlatform.WindowsPlayer:
+                    return "Windows";
+                case RuntimePlatform.OSXPlayer:
+                    return "OSX";
+                // Add more build targets for your own.
+                // If you add more targets, don't forget to add the same platforms to GetPlatformForAssetBundles(RuntimePlatform) function.
+                default:
+                    return null;
+            }
+        }
+
+
     }
 }

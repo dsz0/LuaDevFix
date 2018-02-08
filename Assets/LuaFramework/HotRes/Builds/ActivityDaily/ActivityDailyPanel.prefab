@@ -363,11 +363,11 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 14.583333
+  aspectRatio: 14
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: "\u7B2C7\u6B21\u6D4B\u8BD5\u66F4\u6539Btn-Grid\u70B9\u51FB\u529F\u80FD!"
+  mText: "\u7B2C8\u6B21\u6D4B\u8BD5\u66F4\u6539Btn-Grid\u70B9\u51FB\u529F\u80FD!"
   mFontSize: 24
   mFontStyle: 0
   mAlignment: 0

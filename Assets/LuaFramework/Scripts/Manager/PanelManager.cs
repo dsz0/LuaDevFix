@@ -36,7 +36,7 @@ namespace LuaFramework
         public void CreatePanel(string name, LuaFunction func = null)
         {
             string assetName = name + "Panel";
-            string abName = name.ToLower() + AppConst.ExtName;
+            string abName = name.ToLower();// + AppConst.ExtName;
             if (Parent.FindChild(name) != null) return;
 
 //#if ASYNC_MODE

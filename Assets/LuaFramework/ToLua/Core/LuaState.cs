@@ -192,8 +192,8 @@ namespace LuaInterface
                     throw new LuaException(msg);
                 }
 
-                AddSearchPath(LuaConst.toluaDir);
-                AddSearchPath(LuaConst.luaDir);
+                //AddSearchPath(LuaConst.toluaDir);
+                //AddSearchPath(LuaConst.luaDir);
 #endif
                 if (LuaFileUtils.Instance.GetType() == typeof(LuaFileUtils))
                 {
@@ -701,7 +701,7 @@ namespace LuaInterface
             {
                 throw new LuaException(fullPath + " is not a full path");
             }
-
+            Debug.LogWarning("AddSearchPath:" + fullPath);
             fullPath = ToPackagePath(fullPath);
             LuaFileUtils.Instance.AddSearchPath(fullPath);        
         }

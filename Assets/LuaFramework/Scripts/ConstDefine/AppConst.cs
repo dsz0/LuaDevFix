@@ -3,12 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+#if UNITY_EDITOR	
+using UnityEditor;
+#endif
 
 public class AppConst
 {
     #region lua热更所需Add by Lorry
-    //调试模式-用于开发内部测试
-    public const bool DebugMode = false;
     /// 如果想删掉框架自带的例子，那这个例子模式必须要
     /// 关闭，否则会出现一些错误。
     public static bool ExampleMode = false;                       //例子模式 
@@ -20,7 +21,7 @@ public class AppConst
 
     public const bool UpdateMode = false;                      //更新模式-默认关闭 
     public const bool LuaByteMode = false;                    //Lua字节码模式-默认关闭 
-    public const bool LuaBundleMode = false;                  //Lua代码AssetBundle模式
+    public const bool LuaBundleMode = true;                   //Lua代码AssetBundle模式，注意：在开发模式中为true,也不会读取assetbundle中的lua哦！
 
     /// <summary>
     /// 调试配置

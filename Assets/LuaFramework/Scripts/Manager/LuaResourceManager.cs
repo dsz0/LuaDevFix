@@ -43,9 +43,15 @@ namespace LuaFramework {
             public Action<UObject[]> sharpFunc;
         }
 
-        // Load AssetBundleManifest.
+        /// <summary>
+        /// Load AssetBundleManifest. 
+        /// 载入总的Manifest,然后缓存到m_AllManifest数组中去，待后面查询
+        /// </summary>
+        /// <param name="manifestName"></param>
+        /// <param name="initOK"></param>
         public void Initialize(string manifestName, Action initOK) {
-            m_BaseDownloadingURL = Util.GetRelativePath(); Debug.LogWarning("m_BaseDownloadingURL：" + m_BaseDownloadingURL);
+            m_BaseDownloadingURL = Util.GetRelativePath();
+            Debug.LogWarning("m_BaseDownloadingURL：" + m_BaseDownloadingURL);
             LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate(UObject[] objs) {
                 if (objs.Length > 0) {
                     m_AssetBundleManifest = objs[0] as AssetBundleManifest;
@@ -66,15 +72,17 @@ namespace LuaFramework {
         public void LoadPrefab(string abName, string[] assetNames, LuaFunction func) {
             LoadAsset<GameObject>(abName, assetNames, null, func);
         }
-
+        /// <summary>
+        /// 获得AssetBundle的真正完整路径
+        /// </summary>
         string GetRealAssetPath(string abName) {
-            if (abName.Equals(AppConst.AssetDir)) {
+            if (abName.Equals(Util.GetPlatformName())) {
                 return abName;
-            }
+            }//这里判断是总Manifest,直接返回
             abName = abName.ToLower();
             if (!abName.EndsWith(AppConst.ExtName)) {
                 abName += AppConst.ExtName;
-            }
+            }//必然以打包扩展名结尾(这个扩展名的用法其实和unity设计不太相符,TODO；待修改)
             if (abName.Contains("/")) {
                 return abName;
             }
@@ -85,7 +93,7 @@ namespace LuaFramework {
                 if (path.Equals(abName)) {
                     return m_AllManifest[i];
                 }
-            }
+            }//匹配到manifest中的路径就返回m_AllManifest中的信息。
             Debug.LogError("GetRealAssetPath Error:>>" + abName);
             return null;
         }
@@ -94,6 +102,13 @@ namespace LuaFramework {
         /// 载入素材
         /// </summary>
         void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
+#if UNITY_EDITOR
+            if (EditorUtil.DevelopMode)
+            {//在Editor中开发模式下，用不着loadAssetBundle
+                EditorUtil.LoadAssetInEditor(abName, assetNames, action, func);
+                return;
+            }
+#endif
             abName = GetRealAssetPath(abName);
 
             LoadAssetRequest request = new LoadAssetRequest();
@@ -124,7 +139,7 @@ namespace LuaFramework {
                     Debug.LogError("OnLoadAsset--->>>" + abName);
                     yield break;
                 }
-            }
+            }//运行到这里已经加载到了AssetBundleInfo
             List<LoadAssetRequest> list = null;
             if (!m_LoadRequests.TryGetValue(abName, out list)) {
                 m_LoadRequests.Remove(abName);
@@ -160,7 +175,7 @@ namespace LuaFramework {
 
         IEnumerator OnLoadAssetBundle(string abName, Type type) {
             string url = m_BaseDownloadingURL + abName;
-
+            Debug.Log("OnLoadAssetBundle:" + url);
             WWW download = null;
             if (type == typeof(AssetBundleManifest))
                 download = new WWW(url);
@@ -213,6 +228,12 @@ namespace LuaFramework {
         /// <param name="abName"></param>
         /// <param name="isThorough"></param>
         public void UnloadAssetBundle(string abName, bool isThorough = false) {
+#if UNITY_EDITOR
+            if (EditorUtil.DevelopMode)
+            {//在Editor中开发模式下，没有加载AssetBundle，这里也用不着卸载。
+                return;
+            }
+#endif
             abName = GetRealAssetPath(abName);
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
             UnloadAssetBundleInternal(abName, isThorough);

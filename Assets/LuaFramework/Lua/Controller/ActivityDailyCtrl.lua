@@ -36,7 +36,7 @@ end
 function ActivityDailyCtrl.InitPanel(objs)
   panel.depth = 1;	--设置纵深--
 	local parent = ActivityDailyPanel.gridParent;
-	for i = 1, 100 do
+	for i = 1, 8 do
 		local go = newObject(objs[0]);
 		go.name = 'Item'..tostring(i);
 		go.transform:SetParent(parent);
@@ -45,7 +45,7 @@ function ActivityDailyCtrl.InitPanel(objs)
     prompt:AddClick(go, this.OnItemClick);
 
     local label = go.transform:Find('Label');
-    label:GetComponent('UILabel').text = tostring(i*7);
+    label:GetComponent('UILabel').text = tostring(i*8);
 	end
   local grid = parent:GetComponent('UIGrid');
 	grid:Reposition();

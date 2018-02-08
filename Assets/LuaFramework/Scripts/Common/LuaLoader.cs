@@ -22,6 +22,12 @@ namespace LuaFramework {
         public LuaLoader() {
             instance = this;
             beZip = AppConst.LuaBundleMode;
+#if UNITY_EDITOR
+            if (EditorUtil.DevelopMode)
+            {//如果是在开发模式,肯定是读取真实文件，不会再打包文件中读代码。
+                beZip = false;
+            }
+#endif
         }
 
         /// <summary>
@@ -35,14 +41,14 @@ namespace LuaFramework {
                 AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
                 if (bundle != null)
                 {
-                    Debugger.Log("AddLuaBundle：" + url + "["+ bytes.Length +"]");
+                    //Debugger.Log("AddLuaBundle：" + url + "["+ bytes.Length +"]");
                     bundleName = bundleName.Replace("lua/", "").Replace(".unity3d", "");
                     base.AddSearchBundle(bundleName.ToLower(), bundle);
                 }
             }
             else
             {
-                Debugger.LogWarning("LuaBundle不存在：" + url);
+                //Debugger.LogWarning("LuaBundle不存在：" + url);
             }
         }
 
