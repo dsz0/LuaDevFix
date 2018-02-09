@@ -29,7 +29,7 @@ public class PackDialog : EditorWindow
         if (GUILayout.Button("Build新包" + Util.GetPlatformName()))
         {
             EditorUtil.BundleTime += 1;
-            string temp = Application.dataPath.Replace("Assets", EditorUtil.BundlePath);
+            string temp = Application.dataPath.Replace("Assets", EditorUtil.BundlePath) +"/";
             temp = temp.Replace("\\", "/");
             if (Packager.BuildAssetResource(EditorUserBuildSettings.activeBuildTarget, temp))
             {
@@ -70,18 +70,18 @@ public class PackDialog : EditorWindow
         target = BuildTarget.iPhone;
 
 #endif
-            string path = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/iOS";
-            Packager.BuildAssetResource(target, path);
+            m_JustBundlePath = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/iOS/";
+            Packager.BuildAssetResource(target, m_JustBundlePath);
         }
         if (GUILayout.Button("Build Android Resource"))
         {
-            string path = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/Android";
-            Packager.BuildAssetResource(BuildTarget.Android, path);
+            m_JustBundlePath = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/Android/";
+            Packager.BuildAssetResource(BuildTarget.Android, m_JustBundlePath);
         }
         if (GUILayout.Button("Build Windows Resource"))
         {
-            string path = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/Windows";
-            Packager.BuildAssetResource(BuildTarget.StandaloneWindows, path);
+            m_JustBundlePath = pathToStoreAB + "/" + EditorUtil.luaPackVersion + "/Windows/";
+            Packager.BuildAssetResource(BuildTarget.StandaloneWindows, m_JustBundlePath);
         }
     }
 
@@ -107,7 +107,7 @@ public class PackDialog : EditorWindow
         }
     }
     /// <summary>
-    /// 拷贝文件夹,配有Editor的进度条显示。
+    /// 拷贝文件夹,苹果默认文件和manifest打包文件不拷贝。TODO:配有Editor的进度条显示。
     /// </summary>
     public static void CopyDir(string sourceDir, string destDir)
     {
@@ -130,6 +130,8 @@ public class PackDialog : EditorWindow
         }
         for (int i = 0; i < files.Count; i++)
         {
+            string file = files[i];
+            if (file.Contains(".DS_Store") || file.EndsWith(".manifest")) continue;
             string str = files[i].Remove(0, len);
             string dest = destDir + "/" + str;
             string dir = Path.GetDirectoryName(dest);

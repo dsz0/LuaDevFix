@@ -8,8 +8,8 @@
  **/
 using UnityEditor;
 using UnityEngine;
+using System;
 using System.IO;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,7 +87,7 @@ public class Packager
         }
 #endif
         if (pResPath == null)
-            pResPath = Application.dataPath.Replace("Assets", EditorUtil.BundlePath);
+            pResPath = Application.dataPath.Replace("Assets", EditorUtil.BundlePath) + "/";
 
         UnityEngine.Debug.LogError("Build Res Start>>>" + System.DateTime.Now.ToString());
 
@@ -138,7 +138,7 @@ public class Packager
         string streamDir = Application.dataPath + "/" + AppConst.LuaTempDir;
         if (Directory.Exists(streamDir))
         {
-            UnityEngine.Debug.LogWarning("打包技术，删除临时目录：" + streamDir);
+            UnityEngine.Debug.LogWarning("打包结束，删除临时目录：" + streamDir);
             Directory.Delete(streamDir, true);
         }
         AssetDatabase.Refresh();
@@ -342,11 +342,22 @@ public class Packager
         {
             string file = files[i];
             //string ext = Path.GetExtension(file);
-            if (file.EndsWith(".meta") || file.Contains(".DS_Store")) continue;
-
+            if (file.EndsWith(".meta") || file.Contains(".DS_Store") || file.EndsWith(".manifest")) continue;
             string md5 = Util.md5file(file);
             string value = file.Replace(resPath, string.Empty);
-            sw.WriteLine(value + "|" + md5);
+            #region 增加读取文件大小的代码Lorry
+            FileInfo fileInfo = null;
+            try
+            {
+                fileInfo = new FileInfo(file);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                // 其他处理异常的代码
+            }
+            #endregion 
+            sw.WriteLine(value + "|" + md5 +"|"+ fileInfo.Length);
         }
         sw.Close(); fs.Close();
     }

@@ -68,6 +68,7 @@ namespace LuaFramework
 #if UNITY_EDITOR
             if (EditorUtil.DevelopMode)
             {
+                facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "DevelopMode");
                 //OnResourceInited(); 如果是模拟调试，不需要载入Manifest
                 OnInitialize();
                 return;
@@ -188,9 +189,21 @@ namespace LuaFramework
             string url = AppConst.WebUrl;
             string message = string.Empty;
             string random = DateTime.Now.ToString("yyyymmddhhmmss");
+#pragma warning restore 0162
+            #region lorry2-9，获取服务器版本，更新对应版本的资源
+            //TODO:这个version也可以向Server服务器请求获得
+            string versionUrl = url + "server_version.txt?v=" + random;
+            WWW verDownload = new WWW(versionUrl); yield return verDownload;
+            if (verDownload.error != null)
+            {
+                facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "获得server_version.txt失败！热更中断：" + verDownload.error);
+                yield break;
+            }
+            string version = verDownload.text;
+            url = AppConst.WebUrl + version + "/" + Util.GetPlatformName() +"/";
+            #endregion
             string listUrl = url + "files.txt?v=" + random;
             Debug.LogWarning("Down files.txt -->>" + listUrl);
-#pragma warning restore 0162
 
             WWW www = new WWW(listUrl); yield return www;
             if (www.error != null)
@@ -214,6 +227,7 @@ namespace LuaFramework
             List<string> willDownLoadDestination = new List<string>();//to  
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "分析需要更新的文件");
             Debug.LogWarning("分析需要更新的文件:" + files.Length);
+            int totalSize = 0;
             for (int i = 1; i < files.Length; i++)
             {//分析每一个文件是否需要更新
                 if (string.IsNullOrEmpty(files[i])) continue;
@@ -236,6 +250,8 @@ namespace LuaFramework
                 }
                 if (canUpdate)
                 {
+                    int fileSize = int.Parse(keyValue[2]);
+                    totalSize += fileSize;
                     willDownLoadUrl.Add(fileUrl);//下载地址  
                     willDownLoadFileName.Add(f);
                     willDownLoadDestination.Add(localfile);//目标文件路径  
@@ -245,7 +261,7 @@ namespace LuaFramework
                 }
             }
 
-            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "开始下载更新文件");
+            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "开始下载更新文件" + Util.FormatFileSize(totalSize));
             if (willDownLoadUrl.Count > 0)
             {
                 facade.SendMessageCommand(NotiConst.UPDATE_ALL_COUNT, willDownLoadUrl.Count);
