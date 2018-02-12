@@ -5,7 +5,8 @@ Library
 Assets/3rd/NGUI
 Assets/3rd/NGUI.meta
 Assets/LuaFramework/Resources
-Assets/LuaFramework/Proxy
+Assets/Proxy
+Assets/Proxy.meta
 Assets/LuaFramework/ToLua/Source/Generate
 Assets/Plugins/x86
 Assets/Plugins/x86.meta
@@ -21,4 +22,4 @@ LuaRaz.sln
 Assets/Plugins/x86.meta
 Assets/Plugins/x86/tolua.dll
 Assets/Plugins/x86/tolua.dll.meta
-Assets/LuaFramework/Proxy.meta
+

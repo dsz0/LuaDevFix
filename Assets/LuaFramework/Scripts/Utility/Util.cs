@@ -252,7 +252,7 @@ namespace LuaFramework
         public static string GetRelativePath()
         {
             if (Application.isEditor)
-                return "file://" + DataPath;//System.Environment.CurrentDirectory.Replace("\\", "/") + "/Assets/" + AppConst.AssetDir + "/";
+                return "file:///" + DataPath;//System.Environment.CurrentDirectory.Replace("\\", "/") + "/Assets/" + AppConst.AssetDir + "/";
             else if (Application.isMobilePlatform || Application.isConsolePlatform)
                 return "file:///" + DataPath;
             else // For standalone player.
