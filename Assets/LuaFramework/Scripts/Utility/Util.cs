@@ -3,7 +3,7 @@
  * 简    述：对Mono的功能进行封装，这样不继承Mono的类就能使用Mono的东西了(如transform.Find、GetComponent)；
  * 还有其他的工具方法，比如处理文件，获得数据目录DataPath,判断网络状态等等，方便Lua中使用。
  * 创建标识：Lorry 2018/1/26
- * 修改标识：增加一个将数字转换为B,KB,MB,GB文字的方便函数FormatFileSize Lorry 2018/2/9
+ * 修改标识：增加一个将文件大小转换为B,KB,MB,GB文字的方便函数FormatFileSize Lorry 2018/2/9
  **/
 using UnityEngine;
 using System;

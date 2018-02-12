@@ -24,7 +24,6 @@ namespace LuaFramework
     public class HotFixManager : Manager
     {
         protected static bool initialize = false;
-        bool hadExtractResource;
         //bool firstExtractResource = true;
         /// <summary>
         /// 包内资源的版本
@@ -83,15 +82,14 @@ namespace LuaFramework
         /// </summary>
         public void CheckExtractResource()
         {
-            hadExtractResource = Directory.Exists(Util.DataPath) &&
-              Directory.Exists(Util.DataPath + "lua/") &&
-              File.Exists(Util.DataPath + "files.txt");
-            if (hadExtractResource)//|| AppConst.DebugMode)
-            { //文件已经解压过了，这里还可以添加检查文件列表逻辑
-                StartCoroutine(OnUpdateResource());
-                return;
+            if (UtilEx.IsFirstOpen())
+            {
+                StartCoroutine(OnExtractResource());    //启动释放协成 
             }
-            StartCoroutine(OnExtractResource());    //启动释放协成 
+            else
+            {//不是第一次打开，文件已经解压过了，这里还可以添加检查文件列表逻辑
+                StartCoroutine(OnUpdateResource());
+            }
         }
 
         IEnumerator OnExtractResource()
