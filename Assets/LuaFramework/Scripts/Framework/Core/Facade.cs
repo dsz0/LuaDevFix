@@ -86,7 +86,7 @@ public class Facade {
         }
         Component c = AppGameManager.AddComponent<T>();
         m_Managers.Add(typeName, c);
-        return default(T);
+        return (T)c;//这里default(T)改为应该返回c才对。
     }
 
     /// <summary>

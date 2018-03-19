@@ -1,8 +1,12 @@
 /**
- * ÎÄ¼şÃû³Æ£ºPanelManager.cs
- * ¼ò    Êö£ºÖ÷ÒªÊÇÎªÁËÈÃluaÖĞÄÜ·½±ãµÄÉú³ÉUIPanelÃæ°å¡£
- * Ê¹ÓÃ·½·¨£ºÔÚ¿ò¼ÜÖĞ»ù±¾ÉÏ²»ĞèÒª¶ÔÆä½øĞĞµ÷ÓÃ¡£Ö÷ÒªÊÇÔÚluaµÄXXXCtrl.Awake()ÖĞµ÷ÓÃpanelMgr:CreatePanel
- * ´´½¨±êÊ¶£ºLorry 2018/1/26
+ * æ–‡ä»¶åç§°ï¼šPanelManager.cs
+ * ç®€    è¿°ï¼šä¸»è¦æ˜¯ä¸ºäº†è®©luaä¸­èƒ½æ–¹ä¾¿çš„ç”ŸæˆUIPanelé¢æ¿ã€‚
+ * ä½¿ç”¨æ–¹æ³•ï¼šåœ¨æ¡†æ¶ä¸­åŸºæœ¬ä¸Šä¸éœ€è¦å¯¹å…¶è¿›è¡Œè°ƒç”¨ã€‚
+ * ä¸»è¦æ˜¯åœ¨luaçš„ä¸­XXXMediatorçš„åˆ›å»ºé¢æ¿æ—¶()ä¸­è°ƒç”¨panelMgr:CreatePanelï¼Œé”€æ¯é¢æ¿æ—¶è°ƒç”¨panelMgr:ClosePanel
+ * å¦å¤–æä¾›å¯¹äºé¢æ¿gameObjectçš„ShowPanelå’ŒHidePanelå‡½æ•°ã€‚åœ¨è¿™é‡Œå®ç°ï¼Œä¸»è¦æ˜¯æ–¹ä¾¿è°ƒæ•´ã€‚
+ * 1.ä½¿ç”¨SetActive(bool)çš„æ–¹å¼è¿›è¡Œè®¾ç½®ã€‚
+ * 2.å¦‚æœæ¶ˆè€—å¤ªå¤§ï¼Œå¯ä»¥é ç§»åŠ¨ä½ç½®çš„æ–¹å¼éšè—ã€‚
+ * åˆ›å»ºæ ‡è¯†ï¼šLorry 2018/1/26
  **/
 using UnityEngine;
 using System.Collections;
@@ -14,23 +18,25 @@ namespace LuaFramework
 {
     public class PanelManager : Manager
     {
-        private Transform parent;
+        //private Transform parent;
 
         Transform Parent
         {
             get
             {
-                if (parent == null)
-                {
-                    GameObject go = GameObject.FindWithTag("GuiCamera");
-                    if (go != null) parent = go.transform;
-                }
-                return parent;
+                //if (parent == null)
+                //{
+                //    GameObject.Find("Camera");
+                //    //GameObject go = GameObject.FindWithTag("GuiCamera");
+                //    if (go != null) parent = go.transform;
+                //}
+                //return parent;
+                return GameUICommand.GetCur_UICamera();
             }
         }
 
         /// <summary>
-        /// ´´½¨Ãæ°å£¬ÇëÇó×ÊÔ´¹ÜÀíÆ÷
+        /// åˆ›å»ºé¢æ¿ï¼Œè¯·æ±‚èµ„æºç®¡ç†å™¨
         /// </summary>
         /// <param name="type"></param>
         public void CreatePanel(string name, LuaFunction func = null)
@@ -48,14 +54,14 @@ namespace LuaFramework
 
                 GameObject go = Instantiate(prefab) as GameObject;
                 go.name = assetName;
-                go.layer = LayerMask.NameToLayer("Default");
+                go.layer = LayerMask.NameToLayer("UI");
                 go.transform.SetParent(Parent);
                 go.transform.localScale = Vector3.one;
                 go.transform.localPosition = Vector3.zero;
                 go.AddComponent<LuaBehaviour>();
 
                 if (func != null) func.Call(go);
-                Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
+                //Debug.LogWarning("CreatePanel::>> " + name + ",Prfab:" + prefab);
             });
 //#else
 //            GameObject prefab = ResManager.LoadAsset<GameObject>(name, assetName);
@@ -75,7 +81,7 @@ namespace LuaFramework
         }
 
         /// <summary>
-        /// ¹Ø±ÕÃæ°å
+        /// å…³é—­é¢æ¿
         /// </summary>
         /// <param name="name"></param>
         public void ClosePanel(string name)
@@ -84,6 +90,15 @@ namespace LuaFramework
             Transform panelObj = Parent.FindChild(panelName);
             if (panelObj == null) return;
             Destroy(panelObj.gameObject);
+        }
+
+        public void ShowPanel(GameObject go)
+        {
+            go.SetActive(true);
+        }
+        public void HidePanel(GameObject go)
+        {
+            go.SetActive(false);
         }
     }
 }

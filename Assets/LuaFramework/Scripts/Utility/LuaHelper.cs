@@ -44,6 +44,13 @@ namespace LuaFramework {
         }
 
         /// <summary>
+        /// 网络管理器
+        /// </summary>
+        public static RazNetworkManager GetRazNetManager() {
+            return AppFacade.Instance.GetManager<RazNetworkManager>(ManagerName.RazNetwork);
+        }
+
+        /// <summary>
         /// 音乐管理器
         /// </summary>
         public static SoundManager GetSoundManager() {

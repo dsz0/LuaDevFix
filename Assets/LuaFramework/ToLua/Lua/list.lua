@@ -4,14 +4,15 @@
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
 local setmetatable = setmetatable
-
+---@class linkedList
 local list = {}
 list.__index = list
-
+--print("load list.lua")
 function list:new()
 	local t = {length = 0, _prev = 0, _next = 0}
 	t._prev = t
 	t._next = t
+  --print("new list")
 	return setmetatable(t, list)
 end
 
@@ -76,7 +77,7 @@ function list:remove(iter)
 	local _next = iter._next
 	_next._prev = _prev
 	_prev._next = _next
-	
+
 	self.length = math.max(0, self.length - 1)
 	iter.removed = true
 end
@@ -89,7 +90,7 @@ function list:find(v, iter)
 			return iter
 		else
 			iter = iter._next
-		end		
+		end
 	until iter == self
 
 	return nil
@@ -131,11 +132,11 @@ function list:erase(v)
 	local iter = self:find(v)
 
 	if iter then
-		self:remove(iter)		
+		self:remove(iter)
 	end
 end
 
-function list:insert(v, iter)	
+function list:insert(v, iter)
 	if not iter then
 		return self:push(v)
 	end

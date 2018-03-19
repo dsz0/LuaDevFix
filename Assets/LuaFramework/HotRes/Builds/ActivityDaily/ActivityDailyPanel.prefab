@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4866343899586002}
   - component: {fileID: 114904516904094410}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: txt_msg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 114256741807619576}
   - component: {fileID: 114157335928746774}
   - component: {fileID: 54522586585656606}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4637277594155192}
   - component: {fileID: 114369933788345854}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   - component: {fileID: 4340064163386064}
   - component: {fileID: 114117483742305774}
   - component: {fileID: 114205859417188140}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 4982145446775162}
   - component: {fileID: 114870851211037084}
   - component: {fileID: 54680647443519698}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ActivityDailyPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4504391372404308}
   - component: {fileID: 114986120705057326}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 4319115806514854}
   - component: {fileID: 65393302982127492}
   - component: {fileID: 114329204767119304}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Open
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4006972347322154}
   - component: {fileID: 114592829454569598}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4897903193404198}
   - component: {fileID: 114114638101976116}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: txt_title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,17 +357,17 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 350
+  mWidth: 196
   mHeight: 24
   mDepth: 1
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 14
+  aspectRatio: 7.6666665
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: "\u7B2C8\u6B21\u6D4B\u8BD5\u66F4\u6539Btn-Grid\u70B9\u51FB\u529F\u80FD!"
+  mText: "Lua\u52A8\u6001\u66F4\u6539\u6D4B\u8BD52"
   mFontSize: 24
   mFontStyle: 0
   mAlignment: 0
@@ -395,7 +395,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1523373168803388}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07c4de3b4b6fe9045b059ee627c100df, type: 3}
   m_Name: 
@@ -607,7 +607,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: "\u70B9\u51FB\u6D4B\u8BD5"
+  mText: "\u5F39\u51FATips"
   mFontSize: 16
   mFontStyle: 0
   mAlignment: 0
@@ -703,18 +703,18 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 398
-  mHeight: 20
+  mWidth: 142
+  mHeight: 18
   mDepth: 1
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 19.9
+  aspectRatio: 7.888889
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
-  mText: "\u5355\u51FB\u6309\u94AE\u5F39\u51FATips\uFF0C\u4E5F\u53EF\u4EE5\u5728\u8FD9\u91CC\u505A\u7F51\u7EDC\u5B9E\u9A8C"
-  mFontSize: 20
+  mText: "\u53F3\u65B9\u6309\u94AE\u5F39\u51FATips"
+  mFontSize: 18
   mFontStyle: 0
   mAlignment: 0
   mEncoding: 1

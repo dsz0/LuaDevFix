@@ -366,7 +366,7 @@ namespace LuaFramework
         }
 
         /// <summary>
-        /// 执行Lua方法
+        /// 执行Lua方法,但慎用, 有gc alloc
         /// </summary>
         public static object[] CallMethod(string module, string func, params object[] args)
         {

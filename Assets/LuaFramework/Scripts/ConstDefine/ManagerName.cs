@@ -9,6 +9,7 @@ namespace LuaFramework {
         public const string Sound = "SoundManager";
         public const string Panel = "PanelManager";
         public const string Network = "NetworkManager";
+        public const string RazNetwork = "RazNetworkManager";
         public const string Resource = "LuaResourceManager";
         public const string Thread = "ThreadManager";
         public const string ObjectPool = "ObjectPoolManager";

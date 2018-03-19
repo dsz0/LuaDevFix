@@ -1,20 +1,24 @@
-﻿/**
+/**
  * 文件名称：HotFixManager.cs
- * 简    述：这里最重要的功能其实是解包，进行资源更新，然后在OnInitialize中执行.lua文件，当然因为函数中调用了LuaManager.InitStart()，所以在Main.lua中执行我们需要的逻辑也是可行的。
- * 如果更新界面也要热更得话。解包过程要分两次。第一次解包后执行lua逻辑，第二次解包后才更新（这时才能用进度条表现热更新进度）。
- * 为什么要解包两次呢？因为进度界面的lua代码需要依赖一些核心的lua文件，所以干脆先把lua文件全都解包。
+ * 简    述：这里最重要的功能其实是解包，进行资源更新，然后在OnInitialize中执行.lua文件。
+ * 当然因为函数中调用了LuaManager.InitStart()，所以在Main.lua中执行我们需要的逻辑也是可行的。
+ * 如果更新界面也要热更得话。解包过程要分两次。第一次解包后执行lua逻辑，第二次解包后才更新（这时才能用进度条表现热更新进度）(暂时不做）。
  * 使用方法：这里会持续的发出当前正在解压的文件及更新信息，只需要对应的类中监听NotiConst.UPDATE_MESSAGE即可进行显示。
  * 创建标识：Lorry 2018/1/26
  **/
 
 using UnityEngine;
+using UnityEngine.Networking;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using LuaInterface;
 using System.Reflection;
 using System.IO;
-
+using System.Threading;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LuaFramework
 {
@@ -23,7 +27,6 @@ namespace LuaFramework
     /// </summary>
     public class HotFixManager : Manager
     {
-        protected static bool initialize = false;
         //bool firstExtractResource = true;
         /// <summary>
         /// 包内资源的版本
@@ -36,7 +39,23 @@ namespace LuaFramework
         /// <summary>
         /// 异步加载对象
         /// </summary>
-        WWW downloadOperation;
+        //WWW downloadOperation;
+        private int num = 0;//计数器，更新完一个文件加1
+        private int len = 100;//需要更新文件的数量
+        bool needHotFix = true;//判断是否需要热更
+        bool beginInit = true;//判断资源是否已经加载
+        object objLock = new object();//加个锁，防止线程同时读取
+        List<string> HadDownLoadDestination = new List<string>();//已经进入下载的进行标记
+
+        /// <summary>
+        /// 用于lua热更完成后的回调。
+        /// </summary>
+        Action m_callbackfunc;
+        public void AddCallBack(Action callback)
+        {
+            m_callbackfunc = callback;
+        }
+
         /// <summary>
         /// 初始化游戏管理器
         /// </summary>
@@ -50,11 +69,41 @@ namespace LuaFramework
             //判断异步对象并且异步对象没有加载完毕，显示进度    
             //if (downloadOperation != null && !downloadOperation.isDone)
             //{
-                //string message = string.Format("下载进度:{0:F}%", downloadOperation.progress * 100.0);
-                //Debugger.Log(message); 
-                //facade.SendMessageCommand(NotiConst.UPDATE_SPEED, message);
+            //string message = string.Format("下载进度:{0:F}%", downloadOperation.progress * 100.0);
+            //Debugger.Log(message); 
+            //facade.SendMessageCommand(NotiConst.UPDATE_SPEED, message);
             //}
+            if (beginInit == true)//判断资源是否已经加载
+            {
+                if (needHotFix)
+                {
+                    if (num == len)
+                    {
+                        string message = "资源更新完成!!";
+                        facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, message);
+                        beginInit = false;
+                        int len = HadDownLoadDestination.Count;
+                        for (int i = 0; i < len; i++)
+                        {
+                            Debug.Log(HadDownLoadDestination[i]);
+                            PlayerPrefs.DeleteKey(HadDownLoadDestination[i]);
+                        }
+                        OnResourceInited();
+
+                    }
+                }
+                else
+                {
+                    string message = "资源更新完成!!";
+                    facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, message);
+                    beginInit = false;
+                    OnResourceInited();
+                }
+            }
+
+
         }
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -69,7 +118,7 @@ namespace LuaFramework
             {
                 facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "DevelopMode");
                 //OnResourceInited(); 如果是模拟调试，不需要载入Manifest
-                OnInitialize();
+                StartCoroutine(OnReadyCallBack());
                 return;
             }
 #endif
@@ -124,7 +173,7 @@ namespace LuaFramework
             facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "开始内部文件解包");
             //释放所有文件到数据目录
             string[] files = File.ReadAllLines(outfile);
-            facade.SendMessageCommand(NotiConst.EXTRACT_ALL_COUNT, files.Length-1);
+            facade.SendMessageCommand(NotiConst.EXTRACT_ALL_COUNT, files.Length - 1);
             //foreach (var file in files)
             m_InVersion = files[0];
             for (int i = 1; i < files.Length; i++)
@@ -185,26 +234,28 @@ namespace LuaFramework
             }
             string dataPath = Util.DataPath;  //数据目录
             string url = AppConst.WebUrl;
-            string message = string.Empty;
+            //string message = string.Empty;
             string random = DateTime.Now.ToString("yyyymmddhhmmss");
 #pragma warning restore 0162
             #region lorry2-9，获取服务器版本，更新对应版本的资源
             //TODO:这个version也可以向Server服务器请求获得
             string versionUrl = url + "server_version.txt?v=" + random;
-            WWW verDownload = new WWW(versionUrl); yield return verDownload;
-            if (verDownload.error != null)
-            {
+            UnityWebRequest verDownload = UnityWebRequest.Get(versionUrl);
+            yield return verDownload.Send();
+            if(verDownload.isError) {
+                Debug.Log(verDownload.error);
                 facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "获得server_version.txt失败！热更中断：" + verDownload.error);
                 yield break;
             }
-            string version = verDownload.text;
-            url = AppConst.WebUrl + version + "/" + Util.GetPlatformName() +"/";
+            string version = verDownload.downloadHandler.text;
+            url = AppConst.WebUrl + version + "/" + Util.GetPlatformName() + "/";
             #endregion
             string listUrl = url + "files.txt?v=" + random;
             Debug.LogWarning("Down files.txt -->>" + listUrl);
 
-            WWW www = new WWW(listUrl); yield return www;
-            if (www.error != null)
+            UnityWebRequest www = UnityWebRequest.Get(listUrl); 
+            yield return www.Send();
+            if (www.isError)
             {
                 facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "更新files.txt失败！热更中断：" + www.error);
                 yield break;
@@ -214,8 +265,8 @@ namespace LuaFramework
                 Directory.CreateDirectory(dataPath);
             }
             //首先把files.txt写到数据目录。
-            File.WriteAllBytes(dataPath + "files.txt", www.bytes);
-            string filesText = www.text;
+            File.WriteAllBytes(dataPath + "files.txt", www.downloadHandler.data);
+            string filesText = www.downloadHandler.text;
             string[] files = filesText.Split('\n');
             Debug.LogWarning("Write files.txt To-->>" + dataPath);
             m_DataVersion = files[0];
@@ -244,6 +295,11 @@ namespace LuaFramework
                     string remoteMd5 = keyValue[1].Trim();
                     string localMd5 = Util.md5file(localfile);
                     canUpdate = !remoteMd5.Equals(localMd5);
+                    if (PlayerPrefs.GetString(localfile) == version)//判断本地是否有已经下载的信息
+                    {
+                        canUpdate = false;
+                        willDownLoadDestination.Add(localfile);//有下载信息也要下载
+                    }
                     if (canUpdate) File.Delete(localfile); //md5码不同，把本地文件删除，接下来会下载这个文件。
                 }
                 if (canUpdate)
@@ -267,31 +323,88 @@ namespace LuaFramework
             else
             {
                 Debug.LogWarning("分析完毕，没有文件需要更新！");
+                needHotFix = false;
             }
             //这里是对比后需要更新的资源文件，TODO:用线程下载
+            len = willDownLoadUrl.Count;
+            num = 0;
             for (int i = 0; i < willDownLoadUrl.Count; i++)
             {
                 Debug.Log("下载：" + willDownLoadUrl[i]);
                 facade.SendMessageCommand(NotiConst.UPDATE_FILE_NAME, willDownLoadFileName[i]);
-                downloadOperation = new WWW(willDownLoadUrl[i]);
-                yield return downloadOperation;
-                if (downloadOperation.error != null)
-                {//指明更新失败的文件。退出循环！
-                    facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "更新失败!>" + willDownLoadFileName[i]);
-                    yield break;
-                }
-                
-                Debug.Log("写入size["+ downloadOperation.size+"]:" + willDownLoadDestination[i]);
-                File.WriteAllBytes(willDownLoadDestination[i], downloadOperation.bytes);
-                //downloadOperation = null;//避免update循环中判断过多
-                facade.SendMessageCommand(NotiConst.UPDATE_FINISH_ONE, 0);
+                PlayerPrefs.SetString(willDownLoadDestination[i], version);//如果已经下载设置值为版本号
+                HadDownLoadDestination.Add(willDownLoadDestination[i]);
+                Thread thread = new Thread(new ParameterizedThreadStart(Down));
+                thread.Start(willDownLoadUrl[i] + "|" + willDownLoadDestination[i] + "|" + willDownLoadFileName[i]);
             }
             yield return new WaitForEndOfFrame();
-
-            message = "资源更新完成!!";
-            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, message);
-            OnResourceInited();
         }
+
+        /// <summary>
+        /// 线程下载
+        /// </summary>
+        /// <param name="file"></param>
+        private void Down(System.Object file)
+        {
+            string[] fileName = file.ToString().Split('|');
+            string willDownLoadUrl = fileName[0];
+            string willDownLoadDestination = fileName[1];
+            //string willDownLoadFileName = fileName[2];
+
+            long DownloadByte = 0;//用于显示当前的进度
+            long lStartPos = 0; //打开上次下载的文件或新建文件 
+            FileStream fileStream;
+
+            if (File.Exists(willDownLoadDestination))//接着断点下载
+            {
+                fileStream = File.OpenWrite(willDownLoadDestination);//打开流
+                lStartPos = fileStream.Length;//通过字节流的长度确定当前的下载位置
+                fileStream.Seek(lStartPos, SeekOrigin.Current); //移动文件流中的当前指针 
+            }
+            else
+            {
+                fileStream = new FileStream(willDownLoadDestination, FileMode.Create);
+                lStartPos = 0;
+            }
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(willDownLoadUrl) as HttpWebRequest;
+                if (lStartPos > 0)
+                    request.AddRange((int)lStartPos); //设置Range值,向服务器请求，获得服务器回应数据流 
+                //try
+                //{
+                //    HttpWebResponse reponse = (HttpWebResponse)request.GetResponse();
+                //}
+                //catch (WebException webEx)
+                //{
+                //    Debug.Log(webEx.ToString());
+                //}
+                Stream responseStream = request.GetResponse().GetResponseStream();
+                byte[] nbytes = new byte[1024];
+                int nReadSize = 0;
+                nReadSize = responseStream.Read(nbytes, 0, 1024);
+                while (nReadSize > 0)
+                {
+                    fileStream.Write(nbytes, 0, nReadSize);
+                    nReadSize = responseStream.Read(nbytes, 0, 1024);
+                    DownloadByte = DownloadByte + nReadSize;
+                }
+                fileStream.Close();
+                responseStream.Close();
+                Debug.Log("Loading complete");
+                facade.SendMessageCommand(NotiConst.UPDATE_FINISH_ONE, 0);
+                lock (objLock)
+                {
+                    num++;
+                }
+            }
+            catch (Exception ex)
+            {
+                fileStream.Close();
+                Debug.Log(ex.ToString());
+            }
+        }
+
 
         /// <summary>
         /// 资源初始化结束
@@ -299,25 +412,21 @@ namespace LuaFramework
         public void OnResourceInited()
         {
             //TODO：显示In Version[1.5.3] Update Version[1.5.7]
-            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "In[" + m_InVersion +"]Update[" + m_DataVersion +"]");
-//#if ASYNC_MODE 本来这里有两种模式，我现在放弃非ASYNC模式
+            facade.SendMessageCommand(NotiConst.UPDATE_MESSAGE, "In[" + m_InVersion + "]Update[" + m_DataVersion + "]");
+            //#if ASYNC_MODE 本来这里有两种模式，我现在放弃非ASYNC模式
             //ResManager.Initialize(AppConst.AssetDir, delegate ()
             ResManager.Initialize(Util.GetPlatformName(), delegate ()
             {
-                Debug.Log("Initialize OK!!!");
-                this.OnInitialize();
+                StartCoroutine(OnReadyCallBack());
             });
         }
-
-        void OnInitialize()
+        //准备好进行
+        IEnumerator OnReadyCallBack()
         {
-            LuaManager.InitStart();
-            //LuaManager.DoFile("Logic/Game");         //加载游戏
-            //LuaManager.DoFile("Logic/Network");      //加载网络
-            //NetManager.OnInit();                     //初始化网络
-            //Util.CallMethod("Game", "OnInitOK");     //初始化完成
-
-            initialize = true;
+            yield return new WaitForEndOfFrame();// WaitForSeconds(0.1f);
+            m_callbackfunc();
+            //Debug.LogError("OnReadyCallback");
+            //gameObject.AddComponent<LuaGameEnter>();
         }
 
         /// <summary>
@@ -325,15 +434,9 @@ namespace LuaFramework
         /// </summary>
         void OnDestroy()
         {
-            if (NetManager != null)
-            {
-                NetManager.Unload();
-            }
-            if (LuaManager != null)
-            {
-                LuaManager.Close();
-            }
-            Debug.Log("~HotFixManager was destroyed");
         }
+
+
+
     }
 }

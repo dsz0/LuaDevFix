@@ -1,5 +1,5 @@
 
-.vs/LuaRaz/v14/.suo
+.vs/LuaDevFix/v14/.suo
 
 Library
 Assets/3rd/NGUI
@@ -16,9 +16,9 @@ Assets/StreamingAssets.meta
 Temp
 ABHotFix
 
-LuaRaz.csproj
-LuaRaz.Editor.csproj
-LuaRaz.sln
+LuaDevFix.csproj
+LuaDevFix.Editor.csproj
+LuaDevFix.sln
 Assets/Plugins/x86.meta
 Assets/Plugins/x86/tolua.dll
 Assets/Plugins/x86/tolua.dll.meta

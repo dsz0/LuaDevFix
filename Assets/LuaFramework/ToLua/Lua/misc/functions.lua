@@ -19,7 +19,7 @@ function string.split(input, delimiter)
     return arr
 end
 
-function import(moduleName, currentModuleName)
+local function import(moduleName, currentModuleName)
     local currentModuleNameParts
     local moduleFullName = moduleName
     local offset = 1

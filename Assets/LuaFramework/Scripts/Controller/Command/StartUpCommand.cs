@@ -9,7 +9,7 @@ public class StartUpCommand : ControllerCommand
     {
         if (!Util.CheckEnvironment()) return;
 
-        GameObject gameMgr = GameObject.Find("Console");
+        GameObject gameMgr = GameObject.Find("GameManager");
         if (gameMgr != null)
         {
             //AppView appView = 
@@ -26,6 +26,7 @@ public class StartUpCommand : ControllerCommand
         AppFacade.Instance.AddManager<SoundManager>(ManagerName.Sound);
         AppFacade.Instance.AddManager<TimerManager>(ManagerName.Timer);
         AppFacade.Instance.AddManager<NetworkManager>(ManagerName.Network);
+        AppFacade.Instance.AddManager<RazNetworkManager>(ManagerName.RazNetwork);
         AppFacade.Instance.AddManager<LuaResourceManager>(ManagerName.Resource);
         AppFacade.Instance.AddManager<ThreadManager>(ManagerName.Thread);
         AppFacade.Instance.AddManager<ObjectPoolManager>(ManagerName.ObjectPool);

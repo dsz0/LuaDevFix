@@ -1,4 +1,4 @@
-function import(moduleName, currentModuleName)
+local function import(moduleName, currentModuleName)
     local currentModuleNameParts
     local moduleFullName = moduleName
     local offset = 1

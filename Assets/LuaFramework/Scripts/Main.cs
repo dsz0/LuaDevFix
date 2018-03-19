@@ -16,7 +16,22 @@ namespace LuaFramework {
 
         void RealStart()
         {
-            AppFacade.Instance.StartUp();   //启动游戏
+            //gameObject.AddComponent<LocalSocketManager>();
+
+            //LocalSocketManager.Instance.InitSocketManager("127.0.0.1", 7871);
+            //LocalSocketManager.Instance.AsynConnect(this.AsynConnetHandler);
+
+            //AppFacade.Instance.StartUp();   //启动游戏
+            AppFacade.Instance.StartInRac(OnLuaStart);
+        }
+
+        
+        void OnLuaStart()
+        {
+            AppFacade.Instance.EnterLua();
+            //tempGame = gameObject.AddComponent<LuaGameEnter>();
+            //Debug.LogError("OnTest");
+            //GameObject.Destroy(tempGame);
         }
     }
 }

@@ -1,4 +1,4 @@
-headicon.unity3d,*.prefab,Assets/LuaFramework/HotRes/Atlas/HeadIcon
-shared.unity3d,*.prefab,Assets/LuaFramework/HotRes/Atlas/Shared
 activitydaily.unity3d,*.prefab,Assets/LuaFramework/HotRes/Builds/ActivityDaily
 tips.unity3d,*.prefab,Assets/LuaFramework/HotRes/Builds/Tips
+headicon.unity3d,*.prefab,Assets/LuaFramework/HotRes/Atlas/HeadIcon
+shared.unity3d,*.prefab,Assets/LuaFramework/HotRes/Atlas/Shared
