@@ -27,6 +27,8 @@ public class CallLuaFunction : MonoBehaviour
 #endif
         new LuaResLoader();
         lua = new LuaState();
+        lua.AddSearchPath(LuaConst.toluaDir);
+        lua.AddSearchPath(LuaConst.luaDir);
         lua.Start();
         DelegateFactory.Init();        
         lua.DoString(script);
