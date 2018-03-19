@@ -163,6 +163,8 @@ public static class CustomSettings
         _GT(typeof(AppConst)),
         _GT(typeof(LuaHelper)),
         _GT(typeof(ByteBuffer)),
+        _GT(typeof(RazByteBuffer)),
+        _GT(typeof(RazConverter)),
         _GT(typeof(LuaBehaviour)),
 
         _GT(typeof(HotFixManager)),
@@ -172,6 +174,7 @@ public static class CustomSettings
         _GT(typeof(TimerManager)),
         _GT(typeof(ThreadManager)),
         _GT(typeof(NetworkManager)),
+        _GT(typeof(RazNetworkManager)),
         _GT(typeof(LuaResourceManager)),		  
     };
 
