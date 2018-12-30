@@ -28,8 +28,8 @@ end
 
 --初始化面板--
 function TipsPanel.InitPanel()
-    this.btnClose = transform:FindChild("Button").gameObject;
-    this.txtLabel = transform:FindChild("Label").gameObject;
+    this.btnClose = transform:Find("Button").gameObject;
+    this.txtLabel = transform:Find("Label").gameObject;
 
 end
 
